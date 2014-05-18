@@ -2,10 +2,6 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- *//*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
  */
 
 package webservices;
@@ -31,7 +27,7 @@ import util.UserUtil;
  *
  * @author Nourhan
  */
-@Path("/login")
+@Path("user")
 public class UserManagement {
     /*public JSONObject blockUser(String input)
     {
@@ -94,13 +90,13 @@ public String logIn(String inpString)
             
         String username = login.getString("username");
         String password = login.getString("password");
-        User u = new User();
-        u.setUsername(username);
         
         UserImp udao = new UserImp();
+        User u = new User();
+        u.setUsername(username);
+        u.setPassword(password);
         
-        User user =udao.retrieveUserByUserNameAndPassword(null);
-                
+        User user =udao.retrieveUserByUserNameAndPassword(u);
         
         if(user != null){
             UserUtil userUtil = new UserUtil();
@@ -136,7 +132,7 @@ public String logIn(String inpString)
 public String newLogIn(String inpString) 
 {
     
-    System.out.println("**************************************enter to login");
+    System.out.println("enter to login");
     
     JSONObject userJson= new JSONObject();
     JSONObject output = new JSONObject();
@@ -149,12 +145,11 @@ public String newLogIn(String inpString)
         String password = login.getString("password");
         
         UserImp udao = new UserImp();
+        User u = new User();
+        u.setUsername(username);
+        u.setPassword(password);
         
-        User userData = new User();
-        userData.setUsername(username);
-        userData.setPassword(password);
-        
-        User user =udao.retrieveUserByUserNameAndPassword(userData);
+        User user =udao.retrieveUserByUserNameAndPassword(u);
         
         if(user != null){
             
