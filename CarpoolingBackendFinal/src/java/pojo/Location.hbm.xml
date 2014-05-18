@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 16, 2014 8:22:15 AM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+  <class catalog="carpooling" name="pojo.Location" table="location">
+    <id name="id" type="java.lang.Integer">
+      <column name="id"/>
+      <generator class="identity"/>
+    </id>
+    <property name="longitude" type="string">
+      <column length="45" name="longitude" not-null="true"/>
+    </property>
+    <property name="lattitude" type="string">
+      <column length="45" name="lattitude" not-null="true"/>
+    </property>
+    <property name="altitude" type="string">
+      <column length="45" name="altitude" not-null="true"/>
+    </property>
+    <property name="address" type="string">
+      <column length="45" name="address" not-null="true" unique="true"/>
+    </property>
+    <set fetch="select" inverse="true" lazy="true" name="eventToLocations" table="event_to_location">
+      <key>
+        <column name="Location_id" not-null="true"/>
+      </key>
+      <one-to-many class="pojo.EventToLocation"/>
+    </set>
+    <set fetch="select" inverse="true" lazy="true" name="events" table="event">
+      <key>
+        <column name="location_id_from" not-null="true"/>
+      </key>
+      <one-to-many class="pojo.Event"/>
+    </set>
+  </class>
+</hibernate-mapping>

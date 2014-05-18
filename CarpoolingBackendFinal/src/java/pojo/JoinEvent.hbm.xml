@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 16, 2014 8:22:15 AM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+  <class catalog="carpooling" name="pojo.JoinEvent" table="join_event">
+    <composite-id class="pojo.JoinEventId" name="id">
+      <key-property name="eventId" type="int">
+        <column name="Event_id"/>
+      </key-property>
+      <key-property name="userId" type="int">
+        <column name="User_id"/>
+      </key-property>
+    </composite-id>
+    <many-to-one class="pojo.User" fetch="select" insert="false" name="user" update="false">
+      <column name="User_id" not-null="true"/>
+    </many-to-one>
+    <many-to-one class="pojo.Event" fetch="select" insert="false" name="event" update="false">
+      <column name="Event_id" not-null="true"/>
+    </many-to-one>
+    <many-to-one class="pojo.UserStatue" fetch="select" name="userStatue">
+      <column name="User_Statue_id" not-null="true"/>
+    </many-to-one>
+  </class>
+</hibernate-mapping>
