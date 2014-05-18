@@ -6,7 +6,7 @@
 
 package dao;
 
-import static dao.JoinEventDAO.session;
+
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

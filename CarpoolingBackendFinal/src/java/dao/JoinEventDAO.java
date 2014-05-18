@@ -6,6 +6,7 @@
 
 package dao;
 
+import java.sql.SQLException;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -17,18 +18,31 @@ import pojo.*;
  * @author Nourhan
  */
 public class JoinEventDAO {
-    static Session session;
+    
+    private static Session session;
+    
+    //private static JoinEventDAO joinEventDAO ; 
+    
     public JoinEventDAO()
     {
+        
         session = HibernateUtil.getSessionFactory().openSession();
     }
     
+//    
+//    public static JoinEventDAO getInstance(){
+//        
+//        if(joinEventDAO == null){
+//            joinEventDAO = new JoinEventDAO() ; 
+//        }
+//        return joinEventDAO ; 
+//    }
     
     public JoinEvent retrieveJoinEvent (int userId, int eventId)
     {
         Criteria criteria = session.createCriteria(JoinEvent.class,"e")
-                .add(Restrictions.eq("e.users.id",userId ))
-                .add(Restrictions.eq("e.event.idEvent",eventId));
+                .add(Restrictions.eq("e.user.id",userId ))
+                .add(Restrictions.eq("e.event.id",eventId));
         
         List l =criteria.list();
         if(l.size()>0)
@@ -40,6 +54,15 @@ public class JoinEventDAO {
             return null;
         }
     }
+
+    public  List<JoinEvent> retrieveAttendedEvent(int id)
+    {
+        Criteria criteria = session.createCriteria(JoinEvent.class)
+                .add(Restrictions.eq("id.userId", id))
+                .add(Restrictions.eq("userStatue.id", 4));
+        List<JoinEvent> l = criteria.list();
+        return l;
+    }
     public boolean updateJoinEvent(JoinEvent jonEvent)
     {
         session.beginTransaction();
@@ -48,4 +71,32 @@ public class JoinEventDAO {
         return true;
     }
     
+    public boolean addJoinEvent(JoinEvent jonEvent)
+    {
+        try{
+            session.beginTransaction();
+            session.persist(jonEvent);  
+            session.getTransaction().commit();
+            return true;
+        }
+        catch(RuntimeException ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    public boolean deleteJoinEvent(JoinEvent jonEvent)
+    {
+        try{
+            session.beginTransaction();
+            session.delete(jonEvent);  
+            session.getTransaction().commit();
+            return true;
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }
