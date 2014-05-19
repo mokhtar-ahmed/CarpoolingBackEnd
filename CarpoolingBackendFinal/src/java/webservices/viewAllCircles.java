@@ -8,13 +8,16 @@ package webservices;
 
 
 import dao.CircleImp;
+import dao.UserDAO;
 import dao.UserImp;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -73,15 +76,7 @@ public class viewAllCircles {
                 circleJSObj.put("circleId", circleObj.getId().toString());
                 circleJSObj.put("circleImage", "EMPTY");
                 userCirclesJSArray.put(circleJSObj); }
-//            for (Circle circle : userCirclesSet) {
-//                circleObj = circle;
-//                System.out.println(circle.getCircleName()+circle.getIdCircle());
-//                circleJSObj.put("circleName", circleObj.getCircleName().toString());
-//                circleJSObj.put("circleId", circleObj.getIdCircle().toString());
-//                userCirclesJSArray.put(circleJSObj);
-//            }
-     
-     
+
         } catch (JSONException ex) {
             ex.printStackTrace();
             return null ;
@@ -89,43 +84,14 @@ public class viewAllCircles {
         
         System.out.println("************************"+"        "+userCirclesJSArray.toString());
         return  userCirclesJSArray.toString() ;
-//        JSONObject o;
-//        User us = null;
-//        try {
-//            o = new JSONObject(user);
-//            us= new User();
-//            us.setId(o.getInt("userId"));
-//        } catch (JSONException ex) {
-//            Logger.getLogger(viewAllCircles.class.getName()).log(Level.SEVERE, null, ex);
-//        }yUserName(us);
-//        List<Circle> c=circleimp.retri
-//        
-//        CircleImp circleimp = new CircleImp();
-//        UserImp u=new UserImp();
-//        User us1 = u.retrieveUserBeveUserCircles(us1);
-//        JSONObject circles=new JSONObject();
-//        for(int i=0;i<c.size();i++)
-//        {
-//            try {
-//                String name =c.get(i).getCircleName();
-//                int cid=c.get(i).getId();
-//                JSONObject circledata=new JSONObject();
-//                circledata.put("circleName", name);
-//                circledata.put("circleId", cid);
-//                JSONArray ja=new JSONArray();
-//                ja.put(circledata);
-//                circles.put("circles", ja);
-//                System.out.println("looollllllllllllllll");
-//            } catch (JSONException ex) {
-//                //Logger.getLogger(viewAllCircles.class.getName()).log(Level.SEVERE, null, ex);
-//                ex.printStackTrace();
-//            }
-//        }
-////        System.out.println("looollllllly");
-//        //return circles;
-//        //return "eshta ya sasa ";
-//        return circles.toString();
-        //return "true";
     }
+        @GET
+    @Path("/view1")
+    public String view()
+    {
+        
+        return "true";
+    }
+    
     
 }

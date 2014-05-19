@@ -6,6 +6,7 @@
 
 package dao;
 
+
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -16,37 +17,28 @@ import pojo.*;
  *
  * @author Nourhan
  */
-public class LocationDAO {
-
+public class CircleDAO {
+ 
     static Session session;
-    public LocationDAO()
+    public CircleDAO()
     {
         session = HibernateUtil.getSessionFactory().openSession();
     }
     
-    public Location retrieveLocationById(int id)
+    public Circle retrieveCircleById(int id)
     {
-        Criteria criteria = session.createCriteria(Location.class,"l")
-                .add(Restrictions.eq("l.id",id));
-        List l =criteria.list();
+        Criteria criteria = session.createCriteria(Circle.class)
+                .add(Restrictions.eq("id", id));
+        List l= criteria.list();
         if(l.size()>0)
         {
-            return (Location)l.get(0);
+            Circle c=(Circle) l.get(0);
+            return c;
         }
-        else
-        {
+        else{
             return null;
         }
-        
-        
+
     }
     
-     
-    public List<Location> retrieveAllLocation()
-    {
-        Criteria criteria = session.createCriteria(Location.class);
-        List l =criteria.list();
-        
-        return l;
-    }
 }

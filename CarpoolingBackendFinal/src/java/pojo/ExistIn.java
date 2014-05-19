@@ -8,6 +8,10 @@ package pojo;
  */
 public class ExistIn  implements java.io.Serializable {
 
+   public ExistIn()
+   {
+       
+   }
 
      private ExistInId id;
      private User user;

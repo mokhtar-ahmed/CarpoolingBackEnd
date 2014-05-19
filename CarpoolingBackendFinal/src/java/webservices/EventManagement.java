@@ -1,18 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package webservices;
 
-
+import PushNotificationUtil.MessageUtil;
+import PushNotificationUtil.Messages;
 import dao.*;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -36,71 +34,132 @@ public class EventManagement {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/getEvent")
-    public JSONObject retrieveEvent(String input)//finshed
+    public String  retrieveEvent(String inputStr)//finshed
     {
+           JSONObject eventJson = new JSONObject();
+           
+           System.out.println("Enter to get event *********************************");
         try {
-            JSONObject event = new JSONObject(input);
+            JSONObject input = new JSONObject(inputStr);
             Event myEvent = new Event();
-            myEvent.setId(event.getInt("idEvent"));
-            EventDAO edao = new EventDAO();
-            myEvent=edao.retrieveEvent(myEvent);
-            JSONObject eventJson;
-            if(myEvent!=null)
-            {
+            myEvent.setId(input.getInt("idEvent"));
+
+            myEvent= new EventDAO().retrieveEvent(myEvent);
+             
+            if(myEvent!= null){
+                
                 ConverObjectToJsonEvent convert = new ConverObjectToJsonEvent();
                 eventJson=convert.toEventJson(myEvent);
-                return  eventJson;
+                  eventJson.put("Message", "success");
             }
             else
-                return null;
+               eventJson.put("Message", "cann't retrieve the event details");
+            
         } catch (JSONException ex) {
-            return null;
+            ex.printStackTrace();
         }
+        
+            System.out.println(eventJson.toString());
+        
+            return  eventJson.toString();
     }
+    
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/retrieveAllUserEventss")
+    @Path("/retrieveAllUserEvents")
     public JSONArray retrieveAllUserEvents(String input)//finshed
     {
+        
+        
+                    JSONArray eventJson = new JSONArray();
+
         try {
-            JSONObject myUser = new JSONObject(input);
-            int userId= myUser.getInt("userId");
-            UserImp udao = new UserImp();
-            User u=new User();
-            u.setId(userId);
-            User user=udao.retrieveUserById(u);
-            Set events =user.getEvents();
             
-            JSONArray eventJson = new JSONArray();
-            JSONObject eventJsonObj=new JSONObject();
-            Object[] all = events.toArray();
-            int j=0;
-            for(int i=0; i<events.size();i++)
-            {
-                Event myEvent=(Event)all[i];
-                eventJsonObj = new JSONObject();
+            
+            JSONObject myUser = new JSONObject(input);
+            
+            int userId= myUser.getInt("userId");
+            
+            User user= new UserDAO().retrieveUserById(userId);
+            Set events =user.getJoinEvents();
+            
+            Iterator it = events.iterator();
+            
+            
+        
+            while(it.hasNext()){
+                
+                Event myEvent= ((JoinEvent)it.next()).getEvent();
+                
                 String check = myEvent.getEventStatue();
-                if(!check.equalsIgnoreCase("deleted") || !check.equalsIgnoreCase("canceled"))
+                
+                if(!check.equals("deleted") || !check.equals("canceled"))
                 {
+                   JSONObject  eventJsonObj = new JSONObject();
+                   
                     eventJsonObj.put("idEvent", myEvent.getId());
                     eventJsonObj.put("eventName", myEvent.getEventName());
                     eventJsonObj.put("eventDate", myEvent.getEventDate());
-                    eventJson.put(j,eventJsonObj);
-                    j++;
+                    eventJsonObj.put("userStatue", "create");
+                    eventJson.put(eventJsonObj);
+                
                 }
             }
-            return eventJson;
+            
+           
         } catch (JSONException ex) {
-            return null;
+            ex.printStackTrace();
+           // return null;
         }
+         return eventJson;
     }
+    
+      @POST
+      @Produces(MediaType.APPLICATION_JSON)
+      @Consumes(MediaType.APPLICATION_JSON)
+      @Path("/getUserJoinEvents")
+      public String getAllUserJoinEvents(String str){ 
+           
+      System.out.println("enter to user join events");
+      JSONArray outputEvents = new JSONArray();
+           try {
+                JSONObject  input = new JSONObject(str); 
+                int userId= input.getInt("userId");
+                System.out.println("user id at getAllUserJoinEvents  = " +userId);
+                
+                
+                User user = new UserDAO().retrieveUserById(userId);
+                Iterator it =  user.getJoinEvents().iterator();
+       
+            while(it.hasNext()){
+
+                Event ev = ((JoinEvent)it.next()).getEvent();
+
+                System.out.println(ev.getEventName());
+
+                JSONObject ob = new JSONObject();
+                
+                ob.put("id",ev.getId());
+                ob.put("name",ev.getEventName());
+                ob.put("date",ev.getEventDate().toString());
+       
+                outputEvents.put(ob);
+             }
+           
+               } catch (JSONException ex) {
+                        ex.printStackTrace();
+               }
+            return outputEvents.toString();
+      }
+       
       @POST
       @Produces(MediaType.APPLICATION_JSON)
       @Consumes(MediaType.APPLICATION_JSON)
       @Path("/markAsDeletedEvent")
       public JSONObject markAsDeletedEvent(String input) //Finshed
       {
+           JSONObject jsonOutput = new JSONObject();
         try {
             JSONObject event = new JSONObject(input);
             int idEvent=event.getInt("idEvent");//get from json
@@ -111,7 +170,7 @@ public class EventManagement {
             myEvent.setEventStatue("deleted");
             boolean b= edao.updateEvent(myEvent);//updat it
             JSONObject deleted = new JSONObject();
-            JSONObject jsonOutput = new JSONObject();
+           
             if(b)
             {
                 deleted.put("deleted", "true");
@@ -119,7 +178,7 @@ public class EventManagement {
                 jsonOutput.put("HasWarning", false);
                 jsonOutput.put("FaultsMsg", "");
                 jsonOutput.put("ResponseValue",deleted);
-                return jsonOutput;
+               // return jsonOutput;
             }else
             {
                 deleted.put("deleted", "false");
@@ -127,11 +186,13 @@ public class EventManagement {
                 jsonOutput.put("HasWarning", false);
                 jsonOutput.put("FaultsMsg", "");
                 jsonOutput.put("ResponseValue",deleted);
-                return jsonOutput;
+               // return jsonOutput;
             }
         } catch (JSONException ex) {
-            return null;
+            ex.printStackTrace();
+            
         }
+         return jsonOutput;
       }
       @POST
       @Produces(MediaType.APPLICATION_JSON)
@@ -145,6 +206,7 @@ public class EventManagement {
             Event myEvent = eventUtil.comvertToEventObject(event);
             EventDAO edao = new EventDAO();
             boolean b =edao.updateEvent(myEvent);
+            System.out.println(b);
             JSONObject updated = new JSONObject();
             JSONObject jsonOutput = new JSONObject();
             if(b)
@@ -154,6 +216,30 @@ public class EventManagement {
                 jsonOutput.put("HasWarning", false);
                 jsonOutput.put("FaultsMsg", "");
                 jsonOutput.put("ResponseValue",updated);
+                
+                
+               Set joinEvent =myEvent.getJoinEvents();
+               String driverName=myEvent.getUser().getName();
+               String eventName=myEvent.getEventName();
+               
+               for (Iterator it = joinEvent.iterator(); it.hasNext();) 
+               {
+                   
+                   JoinEvent je = (JoinEvent)it.next();
+                   Notification n = new Notification(je.getUser(), je.getEvent(), new Date(),"send","updated");
+                   NotificationDAO ndao = new NotificationDAO();
+                   ndao.addNotification(n);
+                   System.out.println("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");                   
+                   String userId=je.getUser().getPushNotificationId();
+                   try {
+                       int out=MessageUtil.sendMessage( userId, eventName+" "+Messages.UPDATE_EVENT);
+                       System.out.println(out+"---------------------------------------------");
+                   } catch (IOException ex) {
+                       ex.printStackTrace();
+                   }
+                   
+               }
+                
                 return jsonOutput;
             }else
             {
@@ -169,33 +255,67 @@ public class EventManagement {
             return null;
         }
       }
+      
       @POST
       @Produces(MediaType.APPLICATION_JSON)
       @Consumes(MediaType.APPLICATION_JSON)
       @Path("/addEvent")
       public JSONObject addEvent(String input)
       {
+          Event myEvent;
         try {
+            
             JSONObject event = new JSONObject(input);
             EventUtil util = new EventUtil();
-            Event myEvent =util.comvertToEventObject(event);
+            myEvent =util.comvertToEventObject(event);
             EventDAO edao = new EventDAO();
             boolean b =edao.addEvent(myEvent);
+           
+            UserStatue userStatue = new UserStatueDAO().retrieveUserStatueById(6);
+            JoinEvent jee = new JoinEvent(new JoinEventId(myEvent.getId(), myEvent.getUser().getId()),
+                                myEvent.getUser(),myEvent,userStatue);
+            
+            JoinEventDAO joinEventDAO= new JoinEventDAO();
+            joinEventDAO.addJoinEvent(jee);
+            
+            
             JSONObject add = new JSONObject();
             JSONObject jsonOutput = new JSONObject();
+            
            if(b)
            {
+               
                myEvent=edao.retrieveEvent2(myEvent);
-               System.err.println(myEvent.getId());
                JSONObject myEventJson= new JSONObject(input);
                myEventJson.put("idEvent", myEvent.getId());
                updateEvent(myEventJson.toString());
                
-               add.put("updated", true);
+               add.put("id", myEvent.getId());
                jsonOutput.put("HasError", false);
                jsonOutput.put("HasWarning", false);
                jsonOutput.put("FaultsMsg", "");
                jsonOutput.put("ResponseValue",add);
+               
+               Set joinEvent =myEvent.getJoinEvents();
+               String driverName=myEvent.getUser().getName();
+               String eventName=myEvent.getEventName();
+               for (Iterator it = joinEvent.iterator(); it.hasNext();) 
+               {
+                   JoinEvent je = (JoinEvent)it.next();
+                   Notification n = new Notification(je.getUser(), je.getEvent(), new Date(),"send","new");
+                   NotificationDAO ndao = new NotificationDAO();
+                   ndao.addNotification(n);
+                   String userId=je.getUser().getPushNotificationId();
+                   try {
+                       
+                       int out=MessageUtil.sendMessage( userId,driverName+" "+Messages.CREATE_EVENT+" "+eventName);
+                       System.out.println(out+"----------------6666-----------------------------");
+                   } catch (IOException ex) {
+                       ex.printStackTrace();
+                   }
+                   
+               }
+               
            }
            else
            {
@@ -211,43 +331,11 @@ public class EventManagement {
         } catch (JSONException ex) {
             ex.printStackTrace();
             return null;
-            
         }
         
       }
-    
-      /* @POST
-      @Produces(MediaType.APPLICATION_JSON)
-      @Consumes(MediaType.APPLICATION_JSON)
-      @Path("/joinvent")
-      public boolean joinEvent (String input)
-      {
-        try {
-            JSONObject myInput = new JSONObject(input);
-            int eventId =myInput.getInt("eventId");
-            int userId  =myInput.getInt("userId");
-            JoinEventDAO jedao = new JoinEventDAO();
-            
-            JoinEvent myJoinEvent=jedao.retrieveJoinEvent(userId, eventId);
-            if(myJoinEvent.getUserStatue().getId()==1 || myJoinEvent.getEvent().getNoOfSlots()<1)
-            {
-                System.out.println("Sorrrrrrrrrrrrrrrrrrrrry");
-                return false;
-            }
-            else
-            {
-                
-                myJoinEvent.getUserStatue().setId(2);
-                boolean bb=jedao.updateJoinEvent(myJoinEvent);
-//                System.out.println(myJoinEvent.getUserStatue().getId());
-//                System.out.println(bb);
-                return true;
-            }
-        } catch (JSONException ex) {
-            System.err.println("err ");
-            return false;
-        }
-      }*/
+     
+         
       public JSONObject cancelEvent(String input)
       {
           try {
@@ -269,6 +357,23 @@ public class EventManagement {
                 jsonOutput.put("HasWarning", false);
                 jsonOutput.put("FaultsMsg", "");
                 jsonOutput.put("ResponseValue",canceled);
+                
+               Set joinEvent =myEvent.getJoinEvents();
+               String driverName=myEvent.getUser().getName();
+               String eventName=myEvent.getEventName();
+               
+               for (Iterator it = joinEvent.iterator(); it.hasNext();) 
+               {
+                   JoinEvent je = (JoinEvent)it.next();
+                   String userId=je.getUser().getPushNotificationId();
+                   try {
+                       int out=MessageUtil.sendMessage( userId,driverName+" "+Messages.CANCEL_EVENT+" "+eventName);
+                       System.out.println(out+"---------------------------------------------");
+                   } catch (IOException ex) {
+                       ex.printStackTrace();
+                   }
+                   
+               }
             }
             else
             {
@@ -287,5 +392,13 @@ public class EventManagement {
         }
           
       }
+      
+      @GET
+    @Path("/view1")
+    public String view()
+    {
+        
+        return "true";
+    }
       
 }

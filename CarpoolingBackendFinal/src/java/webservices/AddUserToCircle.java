@@ -38,7 +38,8 @@ public class AddUserToCircle {
     @Path("/addUser")
     public String addUserToCirclee(@FormParam(value = "circleId") String circleId,@FormParam(value = "userIds") String userIds) {
         try {
-//            
+//          
+            System.out.println("ENTEREEEEEEEEEEEEEEEEEEEEEEEEEEEEED");
             JSONObject circleJS = new JSONObject(circleId);
             Circle c = new Circle();
             c.setId(circleJS.getInt("circleId"));

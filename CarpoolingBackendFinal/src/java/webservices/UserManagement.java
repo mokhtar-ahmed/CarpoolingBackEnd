@@ -91,12 +91,9 @@ public String logIn(String inpString)
         String username = login.getString("username");
         String password = login.getString("password");
         
-        UserImp udao = new UserImp();
-        User u = new User();
-        u.setUsername(username);
-        u.setPassword(password);
+        UserDAO udao = new UserDAO();
         
-        User user =udao.retrieveUserByUserNameAndPassword(u);
+        User user =udao.retrieveUserbyUsernamePass(username, password);
         
         if(user != null){
             UserUtil userUtil = new UserUtil();
@@ -144,12 +141,9 @@ public String newLogIn(String inpString)
         String username = login.getString("username");
         String password = login.getString("password");
         
-        UserImp udao = new UserImp();
-        User u = new User();
-        u.setUsername(username);
-        u.setPassword(password);
+        UserDAO udao = new UserDAO();
         
-        User user =udao.retrieveUserByUserNameAndPassword(u);
+        User user =udao.retrieveUserbyUsernamePass(username, password);
         
         if(user != null){
             
