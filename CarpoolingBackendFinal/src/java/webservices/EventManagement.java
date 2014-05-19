@@ -34,13 +34,17 @@ public class EventManagement {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/getEvent")
+
     public String  retrieveEvent(String inputStr)//finshed
+
     {
            JSONObject eventJson = new JSONObject();
            
            System.out.println("Enter to get event *********************************");
         try {
+
             JSONObject input = new JSONObject(inputStr);
+
             Event myEvent = new Event();
             myEvent.setId(input.getInt("idEvent"));
 
@@ -61,7 +65,9 @@ public class EventManagement {
         
             System.out.println(eventJson.toString());
         
+
             return  eventJson.toString();
+
     }
     
     @POST
@@ -72,10 +78,10 @@ public class EventManagement {
     {
         
         
-                    JSONArray eventJson = new JSONArray();
+          JSONArray eventJson = new JSONArray();
 
         try {
-            
+        
             
             JSONObject myUser = new JSONObject(input);
             
@@ -107,7 +113,7 @@ public class EventManagement {
                 }
             }
             
-           
+
         } catch (JSONException ex) {
             ex.printStackTrace();
            // return null;
@@ -119,6 +125,7 @@ public class EventManagement {
       @Produces(MediaType.APPLICATION_JSON)
       @Consumes(MediaType.APPLICATION_JSON)
       @Path("/getUserJoinEvents")
+
       public String getAllUserJoinEvents(String str){ 
            
       System.out.println("enter to user join events");
@@ -127,8 +134,7 @@ public class EventManagement {
                 JSONObject  input = new JSONObject(str); 
                 int userId= input.getInt("userId");
                 System.out.println("user id at getAllUserJoinEvents  = " +userId);
-                
-                
+
                 User user = new UserDAO().retrieveUserById(userId);
                 Iterator it =  user.getJoinEvents().iterator();
        

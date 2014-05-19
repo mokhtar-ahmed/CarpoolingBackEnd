@@ -40,8 +40,7 @@ public class LocationDAO {
         
         
     }
-    
-     
+
     public List<Location> retrieveAllLocation()
     {
         Criteria criteria = session.createCriteria(Location.class);
