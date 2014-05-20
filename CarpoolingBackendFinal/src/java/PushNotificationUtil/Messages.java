@@ -15,7 +15,7 @@ public class Messages {
     
     public static final String  CREATE_EVENT    ="invite you to join";
     public static final String  JOIN_EVENT      ="want to join";
-    public static final String  ACCEPT_REQUEST  ="accepted your request to join";
+    public static final String  ACCEPT_REQUEST  ="Your request is Accept to join";
     public static final String  CANCEL_EVENT    ="cancled";
     public static final String  UPDATE_EVENT    ="is updated";
     
