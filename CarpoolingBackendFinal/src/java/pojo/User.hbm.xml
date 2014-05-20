@@ -1,86 +1,87 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated May 16, 2014 8:22:15 AM by Hibernate Tools 3.6.0 -->
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 20, 2014 5:05:59 AM by Hibernate Tools 3.6.0 -->
 <hibernate-mapping>
-  <class catalog="carpooling" name="pojo.User" table="user">
-    <id name="id" type="java.lang.Integer">
-      <column name="id"/>
-      <generator class="identity"/>
-    </id>
-    <property name="name" type="string">
-      <column length="45" name="name" not-null="true"/>
-    </property>
-    <property name="username" type="string">
-      <column length="45" name="username" not-null="true" unique="true"/>
-    </property>
-    <property name="password" type="string">
-      <column length="45" name="password" not-null="true"/>
-    </property>
-    <property name="gender" type="string">
-      <column length="45" name="gender"/>
-    </property>
-    <property name="dateOfBirth" type="date">
-      <column length="10" name="date_of_birth"/>
-    </property>
-    <property name="pushNotificationId" type="string">
-      <column length="45" name="push_notification_id" unique="true"/>
-    </property>
-    <property name="rank" type="string">
-      <column length="45" name="rank"/>
-    </property>
-    <property name="userImage" type="string">
-      <column length="250" name="user_image"/>
-    </property>
-    <property name="email" type="string">
-      <column length="45" name="email" unique="true"/>
-    </property>
-    <property name="facebookKey" type="string">
-      <column length="45" name="facebook_Key" unique="true"/>
-    </property>
-    <property name="phone" type="string">
-      <column length="45" name="phone" not-null="true"/>
-    </property>
-    <set fetch="select" inverse="true" lazy="true" name="joinEvents" table="join_event">
-      <key>
-        <column name="User_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.JoinEvent"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="events" table="event">
-      <key>
-        <column name="User_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.Event"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="phones" table="phone">
-      <key>
-        <column name="User_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.Phone"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="notifications" table="notification">
-      <key>
-        <column name="User_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.Notification"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="circles" table="circle">
-      <key>
-        <column name="Users_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.Circle"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="comments" table="comment">
-      <key>
-        <column name="User_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.Comment"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="existIns" table="exist_in">
-      <key>
-        <column name="User_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.ExistIn"/>
-    </set>
-  </class>
+    <class name="pojo.User" table="user" catalog="carpooling">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" length="45" not-null="true" />
+        </property>
+        <property name="username" type="string">
+            <column name="username" length="45" not-null="true" unique="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="password" length="45" not-null="true" />
+        </property>
+        <property name="gender" type="string">
+            <column name="gender" length="45" />
+        </property>
+        <property name="dateOfBirth" type="date">
+            <column name="date_of_birth" length="0" />
+        </property>
+        <property name="pushNotificationId" type="string">
+            <column name="push_notification_id" length="45" unique="true" />
+        </property>
+        <property name="rank" type="string">
+            <column name="rank" length="45" />
+        </property>
+        <property name="userImage" type="string">
+            <column name="user_image" length="250" />
+        </property>
+        <property name="email" type="string">
+            <column name="email" length="45" unique="true" />
+        </property>
+        <property name="facebookKey" type="string">
+            <column name="facebook_Key" length="45" unique="true" />
+        </property>
+        <property name="phone" type="string">
+            <column name="phone" length="45" not-null="true" unique="true" />
+        </property>
+        <set name="joinEvents" table="join_event" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="User_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.JoinEvent" />
+        </set>
+        <set name="events" table="event" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="User_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.Event" />
+        </set>
+        <set name="phones" table="phone" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="User_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.Phone" />
+        </set>
+        <set name="notifications" table="notification" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="User_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.Notification" />
+        </set>
+        <set name="circles" table="circle" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Users_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.Circle" />
+        </set>
+        <set name="comments" table="comment" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="User_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.Comment" />
+        </set>
+        <set name="existIns" table="exist_in" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="User_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.ExistIn" />
+        </set>
+    </class>
 </hibernate-mapping>

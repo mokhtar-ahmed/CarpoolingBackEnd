@@ -1,53 +1,54 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated May 16, 2014 8:22:15 AM by Hibernate Tools 3.6.0 -->
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 20, 2014 5:05:59 AM by Hibernate Tools 3.6.0 -->
 <hibernate-mapping>
-  <class catalog="carpooling" name="pojo.Event" table="event">
-    <id name="id" type="java.lang.Integer">
-      <column name="id"/>
-      <generator class="identity"/>
-    </id>
-    <many-to-one class="pojo.User" fetch="select" name="user">
-      <column name="User_id" not-null="true"/>
-    </many-to-one>
-    <many-to-one class="pojo.Location" fetch="select" name="location">
-      <column name="location_id_from" not-null="true"/>
-    </many-to-one>
-    <property name="eventName" type="string">
-      <column length="45" name="event_name" not-null="true"/>
-    </property>
-    <property name="noOfSlots" type="int">
-      <column name="no_of_slots" not-null="true"/>
-    </property>
-    <property name="eventDate" type="timestamp">
-      <column length="19" name="event_date" not-null="true"/>
-    </property>
-    <property name="eventStatue" type="string">
-      <column length="45" name="eventStatue" not-null="true"/>
-    </property>
-    <set fetch="select" inverse="true" lazy="true" name="notifications" table="notification">
-      <key>
-        <column name="Event_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.Notification"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="eventToLocations" table="event_to_location">
-      <key>
-        <column name="Event_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.EventToLocation"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="joinEvents" table="join_event">
-      <key>
-        <column name="Event_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.JoinEvent"/>
-    </set>
-    <set fetch="select" inverse="true" lazy="true" name="comments" table="comment">
-      <key>
-        <column name="Event_id" not-null="true"/>
-      </key>
-      <one-to-many class="pojo.Comment"/>
-    </set>
-  </class>
+    <class name="pojo.Event" table="event" catalog="carpooling">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="user" class="pojo.User" fetch="select">
+            <column name="User_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="location" class="pojo.Location" fetch="select">
+            <column name="location_id_from" not-null="true" />
+        </many-to-one>
+        <property name="eventName" type="string">
+            <column name="event_name" length="45" not-null="true" />
+        </property>
+        <property name="noOfSlots" type="int">
+            <column name="no_of_slots" not-null="true" />
+        </property>
+        <property name="eventDate" type="timestamp">
+            <column name="event_date" length="0" not-null="true" />
+        </property>
+        <property name="eventStatue" type="string">
+            <column name="eventStatue" length="45" not-null="true" />
+        </property>
+        <set name="notifications" table="notification" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Event_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.Notification" />
+        </set>
+        <set name="eventToLocations" table="event_to_location" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Event_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.EventToLocation" />
+        </set>
+        <set name="joinEvents" table="join_event" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Event_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.JoinEvent" />
+        </set>
+        <set name="comments" table="comment" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Event_id" not-null="true" />
+            </key>
+            <one-to-many class="pojo.Comment" />
+        </set>
+    </class>
 </hibernate-mapping>

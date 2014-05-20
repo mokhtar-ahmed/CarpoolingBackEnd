@@ -1,24 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated May 16, 2014 8:22:15 AM by Hibernate Tools 3.6.0 -->
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 20, 2014 5:05:59 AM by Hibernate Tools 3.6.0 -->
 <hibernate-mapping>
-  <class catalog="carpooling" name="pojo.ExistIn" table="exist_in">
-    <composite-id class="pojo.ExistInId" name="id">
-      <key-property name="userId" type="int">
-        <column name="User_id"/>
-      </key-property>
-      <key-property name="circleId" type="int">
-        <column name="Circle_id"/>
-      </key-property>
-    </composite-id>
-    <many-to-one class="pojo.User" fetch="select" insert="false" name="user" update="false">
-      <column name="User_id" not-null="true"/>
-    </many-to-one>
-    <many-to-one class="pojo.Circle" fetch="select" insert="false" name="circle" update="false">
-      <column name="Circle_id" not-null="true"/>
-    </many-to-one>
-    <property name="bolckStatue" type="string">
-      <column length="45" name="bolckStatue" not-null="true"/>
-    </property>
-  </class>
+    <class name="pojo.ExistIn" table="exist_in" catalog="carpooling">
+        <composite-id name="id" class="pojo.ExistInId">
+            <key-property name="userId" type="int">
+                <column name="User_id" />
+            </key-property>
+            <key-property name="circleId" type="int">
+                <column name="Circle_id" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="user" class="pojo.User" update="false" insert="false" fetch="select">
+            <column name="User_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="circle" class="pojo.Circle" update="false" insert="false" fetch="select">
+            <column name="Circle_id" not-null="true" />
+        </many-to-one>
+        <property name="bolckStatue" type="string">
+            <column name="bolckStatue" length="45" not-null="true" />
+        </property>
+    </class>
 </hibernate-mapping>
