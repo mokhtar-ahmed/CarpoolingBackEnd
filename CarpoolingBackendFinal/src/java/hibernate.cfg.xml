@@ -7,16 +7,16 @@
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/carpooling?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">root</property>
     <property name="hibernate.connection.password">root</property>
-    <mapping resource="pojo/UserStatue.hbm.xml"/>
-    <mapping resource="pojo/Phone.hbm.xml"/>
     <mapping resource="pojo/ExistIn.hbm.xml"/>
-    <mapping resource="pojo/Comment.hbm.xml"/>
+    <mapping resource="pojo/UserStatue.hbm.xml"/>
+    <mapping resource="pojo/EventToLocation.hbm.xml"/>
     <mapping resource="pojo/JoinEvent.hbm.xml"/>
-    <mapping resource="pojo/User.hbm.xml"/>
     <mapping resource="pojo/Circle.hbm.xml"/>
     <mapping resource="pojo/Event.hbm.xml"/>
-    <mapping resource="pojo/Notification.hbm.xml"/>
     <mapping resource="pojo/Location.hbm.xml"/>
-    <mapping resource="pojo/EventToLocation.hbm.xml"/>
+    <mapping resource="pojo/Phone.hbm.xml"/>
+    <mapping resource="pojo/Comment.hbm.xml"/>
+    <mapping resource="pojo/Notification.hbm.xml"/>
+    <mapping resource="pojo/User.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

@@ -2,15 +2,15 @@
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd">
 <hibernate-reverse-engineering>
   <schema-selection match-catalog="carpooling"/>
-  <table-filter match-name="exist_in"/>
-  <table-filter match-name="user"/>
   <table-filter match-name="user_statue"/>
-  <table-filter match-name="phone"/>
-  <table-filter match-name="circle"/>
   <table-filter match-name="comment"/>
+  <table-filter match-name="user"/>
   <table-filter match-name="event_to_location"/>
-  <table-filter match-name="event"/>
-  <table-filter match-name="notification"/>
   <table-filter match-name="location"/>
+  <table-filter match-name="circle"/>
+  <table-filter match-name="notification"/>
+  <table-filter match-name="event"/>
   <table-filter match-name="join_event"/>
+  <table-filter match-name="phone"/>
+  <table-filter match-name="exist_in"/>
 </hibernate-reverse-engineering>
