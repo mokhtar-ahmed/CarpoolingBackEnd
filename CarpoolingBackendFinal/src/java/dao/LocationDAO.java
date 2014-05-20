@@ -24,6 +24,7 @@ public class LocationDAO {
         session = HibernateUtil.getSessionFactory().openSession();
     }
     
+    //retrieveOneLocation
     public Location retrieveLocationById(int id)
     {
         Criteria criteria = session.createCriteria(Location.class,"l")
@@ -38,9 +39,9 @@ public class LocationDAO {
             return null;
         }
         
-        
     }
-
+    
+    //retrieveAllLocations
     public List<Location> retrieveAllLocation()
     {
         Criteria criteria = session.createCriteria(Location.class);

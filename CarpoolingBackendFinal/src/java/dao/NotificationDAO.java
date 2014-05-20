@@ -18,8 +18,7 @@ import pojo.*;
  * @author Nourhan
  */
 public class NotificationDAO {
-    
-    static Session session;
+        static Session session;
     
     public NotificationDAO()
     {
@@ -90,4 +89,5 @@ public class NotificationDAO {
        else
            return null;
    }
+    
 }

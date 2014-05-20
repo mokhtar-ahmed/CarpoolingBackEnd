@@ -107,10 +107,10 @@ public class CircleImp implements CircleInt{
     @Override
     public void updateCircle(Circle circle,User user) {
         //needed to be seen 
-        session.beginTransaction();
-        ExistIn ex=new ExistIn(user, circle, "open");
-        session.saveOrUpdate(ex);
-        session.getTransaction().commit();
+//        session.beginTransaction();
+//        ExistIn ex=new ExistIn(user, circle, "open");
+//        session.saveOrUpdate(ex);
+//        session.getTransaction().commit();
     }
 
     @Override

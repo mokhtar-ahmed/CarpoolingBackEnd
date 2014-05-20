@@ -6,7 +6,6 @@
 
 package dao;
 
-import static dao.UserDAO.session;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -17,41 +16,29 @@ import pojo.*;
  *
  * @author Nourhan
  */
-
-
-
 public class UserDAO {
     static Session session;
-   
     public UserDAO()
     {
         session = HibernateUtil.getSessionFactory().openSession();
     }
-    public  User retrieveUserById(int id)
+    public User retrieveUserById(int id)
     {
         try{
-        
-            
-            session.flush();
-            Criteria criteria =session.createCriteria(User.class)
+        Criteria criteria =session.createCriteria(User.class)
                 .add(Restrictions.eq("id", id));
-            List list =criteria.list();
-            User user =(User)list.get(0);
-            
-           // session.evict(user);
-            return user;
-
-        }catch(Exception ex){
-          ex.printStackTrace();
+        List list =criteria.list();
+        User user =(User)list.get(0);
+        return user;
+        }catch(Exception ex)
+        {
+            return null;
         }
-        
-        return null;
     }
 	
     public User retrieveUserbyUsernamePass(String name,String pass)
     {
         User user = null;
-       // session.flush();
         Criteria criteria =session.createCriteria(User.class)
                 .add(Restrictions.eq("username", name))
                 .add(Restrictions.eq("password", pass));
