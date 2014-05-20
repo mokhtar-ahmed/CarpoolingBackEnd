@@ -1,5 +1,5 @@
 package pojo;
-// Generated May 20, 2014 5:05:58 AM by Hibernate Tools 3.6.0
+// Generated May 20, 2014 9:21:31 AM by Hibernate Tools 3.6.0
 
 
 
@@ -16,8 +16,8 @@ public class ExistIn  implements java.io.Serializable {
 
     public ExistIn() {
     }
-    
-        public ExistIn( User user, Circle circle, String bolckStatue) {
+
+    public ExistIn( User user, Circle circle, String bolckStatue) {
         
         ExistInId  n = new ExistInId();
         n.setUserId(user.getId());
@@ -28,7 +28,7 @@ public class ExistIn  implements java.io.Serializable {
        this.circle = circle;
        this.bolckStatue = bolckStatue;
     }
-
+    
     public ExistIn(ExistInId id, User user, Circle circle, String bolckStatue) {
        this.id = id;
        this.user = user;
