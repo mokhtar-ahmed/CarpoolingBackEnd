@@ -17,9 +17,8 @@ import pojo.*;
  *
  * @author Nourhan
  */
-public class ConverObjectToJsonEvent {
-    
-    public JSONObject toEventJson(Event myEvent)
+public class ConvertFromJavaToJson {
+    public JSONObject toEventJsonObj(Event myEvent)
     {
         try {
             JSONObject eventJson = new JSONObject();
@@ -57,20 +56,20 @@ public class ConverObjectToJsonEvent {
             String eventStatue   = myEvent.getEventStatue();
             eventJson.put("eventStatue", eventStatue);
            
-            //notification
-            Set notifications    = myEvent.getNotifications();
-            JSONArray notificationJson = new JSONArray();
-            JSONObject n;
-            Object[] all = notifications.toArray();
-            for(int i =0;i<notifications.size() ;i++)
-            {
-                Notification notification=(Notification)all[i];
-                n = new JSONObject();
-                n.put("id", notification.getId());
-                n.put("userName", notification.getUser().getName());
-                notificationJson.put(i,n);
-            }
-            eventJson.put("notifications", notificationJson);
+//            //notification
+//            Set notifications    = myEvent.getNotifications();
+//            JSONArray notificationJson = new JSONArray();
+//            JSONObject n;
+//            Object[] all = notifications.toArray();
+//            for(int i =0;i<notifications.size() ;i++)
+//            {
+//                Notification notification=(Notification)all[i];
+//                n = new JSONObject();
+//                n.put("id", notification.getId());
+//                n.put("userName", notification.getUser().getName());
+//                notificationJson.put(i,n);
+//            }
+//            eventJson.put("notifications", notificationJson);
             //to
             Set eventToLocations = myEvent.getEventToLocations();
             JSONArray eventToLocationsJson = new JSONArray();
@@ -122,5 +121,5 @@ public class ConverObjectToJsonEvent {
             return null;
         }
     }
-    
+ 
 }

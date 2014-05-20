@@ -6,36 +6,29 @@
 
 package util;
 
-
 import dao.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import pojo.*;
 
-
 /**
  *
  * @author Nourhan
  */
-public class EventUtil {
+
+public class ConvertFromJsonToJava {
     
     int id=0;
     Event myEvent = new Event();
-    ArrayList<Integer> blockedUsersID = new ArrayList<Integer>();
-    
-    
-    public Event comvertToEventObject(JSONObject eventJson)
+    public Event jsonToJavaAdd(JSONObject eventJson)
     {
         try {
             //id
@@ -53,14 +46,14 @@ public class EventUtil {
             //location //from
             if(!eventJson.isNull("location"))
             {
-            JSONObject locationJson = eventJson.getJSONObject("location");
-            myEvent.setLocation(convertLocation(locationJson));
+                JSONObject locationJson = eventJson.getJSONObject("location");
+                myEvent.setLocation(convertLocation(locationJson));
             }
             //eventName
             if(!eventJson.isNull("eventName"))
             {
-            String name = eventJson.getString("eventName");
-            myEvent.setEventName(name);
+                String name = eventJson.getString("eventName");
+                myEvent.setEventName(name);
             }
             //noOfSlots
             if(!eventJson.isNull("noOfSlots"))
@@ -93,10 +86,9 @@ public class EventUtil {
             {
                 //myEvent=deleteOldJoinEvent(myEvent);
                 JSONArray circlesId = eventJson.getJSONArray("cirlclesId");
-                myEvent.setJoinEvents(convertJoinEvents(circlesId));
-                
+                myEvent.setJoinEvents(convertJoinEvents(circlesId)); 
             }
-            
+    
           return myEvent;
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -105,13 +97,23 @@ public class EventUtil {
             ex.printStackTrace();
             return null;
         }
+}
+    
+    private User convertUser(JSONObject userjson) 
+    {
+        try {
+            int userID = userjson.getInt("id");
+            UserDAO udao = new UserDAO();
+            User user = udao.retrieveUserById(userID);
+            return user;
         
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
-    
-    
     public Location convertLocation (JSONObject locationJson) 
     {
-        
         try {
             Location location = new Location();
             LocationDAO ldao = new LocationDAO();
@@ -121,28 +123,17 @@ public class EventUtil {
                 location = ldao.retrieveLocationById(locationID);
             }
             return location;
+        
         } catch (JSONException ex) {
             ex.printStackTrace();
             return null;
         }
     }
-    public User convertUser(JSONObject userjson)
-    {
-        try {
-            int userID = userjson.getInt("id");
-            UserDAO udao = new UserDAO();
-            User user = udao.retrieveUserById(userID);
-            return user;
-        } catch (JSONException ex) {
-            Logger.getLogger(EventUtil.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
     public Set<EventToLocation> convertEventToLocations(JSONArray eventToLocationsJson)
     {
+        Set eventToLocations =  new HashSet(0);
         try {
             JSONObject eJson;
-            Set eventToLocations =  new HashSet(0);
             for(int i =0; i<eventToLocationsJson.length();i++)
             {
                  eJson=(JSONObject)eventToLocationsJson.get(i);
@@ -152,13 +143,14 @@ public class EventUtil {
                      EventToLocation e = new EventToLocation();
                      int oorder =eJson.getInt("toOrder");
                      JSONObject loc = eJson.getJSONObject("location");
+                     int locationID =loc.getInt("id");
                      LocationDAO ldao = new LocationDAO();
-                     Location ll = ldao.retrieveLocationById(loc.getInt("id"));
+                     Location ll = ldao.retrieveLocationById(locationID);
                      e.setToOrder(oorder);
                      e.setEvent(myEvent);
                      e.setLocation(ll);
-                     
-                     EventToLocationDao etld= new EventToLocationDao();
+                     e.setId(new EventToLocationId(myEvent.getId(), locationID));
+                     EventToLocationDAO etld= new EventToLocationDAO();
                      etld.addEventToLocation(e);
                      eventToLocations.add(e);
                  }
@@ -169,74 +161,40 @@ public class EventUtil {
                  return null;
              }
     }
-    
     public Set<JoinEvent> convertJoinEvents (JSONArray circlesID)
     {
         Set<JoinEvent> joinEventsSet = new HashSet(0);
+        
+        JoinEventDAO jedao = new JoinEventDAO();
+        UserStatueDAO usdao = new UserStatueDAO();
+        
         try {
             int circleID;
-            JoinEventDAO jedao = new JoinEventDAO();
             for(int i=0;i<circlesID.length();i++)
             {
                 circleID =circlesID.getInt(i);
-                Circle circle = new CircleDAO().retrieveCircleById(circleID);
-                Set existIn =circle.getExistIns();
-                Object[] o = existIn.toArray();
-                
-                for(int j=0;j<existIn.size();j++)
+                Set<User> users = new NewEventUtil().getUsersExistInCircle(circleID);
+                for (Iterator it = users.iterator(); it.hasNext();)
                 {
-                    ExistIn ei = (ExistIn) o[j];
-                    if(ei!=null || !ei.getBolckStatue().equals("blocked"))
-                    {
-                        int userId = ei.getUser().getId();
-                        UserDAO udao = new UserDAO();
-                        User user=udao.retrieveUserById(userId);
-                        JoinEventId joinEventId = new JoinEventId(id, userId);  
-                        JoinEvent joinEvent = new JoinEvent();  
-                        joinEvent.setId(joinEventId);
-                        
-                        joinEvent.setEvent(myEvent);
-                        joinEvent.setUser(user);
-                        
-                        UserStatueDAO usdao = new UserStatueDAO();
-                        UserStatue userStatue=usdao.retrieveUserStatueById(1);
-                        
-                        joinEvent.setUserStatue(userStatue);   
-                        
-                       jedao.addJoinEvent(joinEvent);
-                       
-                       joinEventsSet.add(joinEvent);
-                       
-                        
-                    }
-                }  
+                    JoinEvent joinEvent = new JoinEvent();  
+                    User user =(User)it.next();
+                    UserStatue userStatue=usdao.retrieveUserStatueById(1);
+                    JoinEventId joinEventId = new JoinEventId(id, user.getId());  
+                    
+                    joinEvent.setId(joinEventId);
+                    joinEvent.setEvent(myEvent);
+                    joinEvent.setUser(user);
+                    joinEvent.setUserStatue(userStatue);   
+                    
+                    jedao.addJoinEvent(joinEvent);// add in database
+                    joinEventsSet.add(joinEvent); //add in set
+                }
             }
-        
+            
+            
         } catch (JSONException ex) {
                 ex.printStackTrace();
             }
-        
-        
         return joinEventsSet;
     }
-    
-    
-    
-//    public Event deleteOldJoinEvent(Event event)
-//    {
-//        EventDAO edao = new EventDAO();
-//        JoinEventDAO joinEventDAO = new JoinEventDAO();
-//        event=edao.retrieveEvent(event);
-//        Set joinEvent  =event.getJoinEvents();
-//        for (Iterator it = joinEvent.iterator(); it.hasNext();)
-//        {
-//         JoinEvent je = (JoinEvent)it.next();
-//         boolean b =joinEventDAO.deleteJoinEvent(je);
-//            System.out.println(b+"88888888888888888888888888888888888");
-//        }
-//        joinEvent.clear();
-//        event.setJoinEvents(joinEvent);
-//        edao.updateEvent(event);
-//        return event;
-//    }
 }
