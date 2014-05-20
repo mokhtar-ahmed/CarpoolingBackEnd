@@ -26,18 +26,18 @@ public class TestDao {
         Event e = new Event();
         //e.setEventName("iti");
         e.setId(1);
-        EventDAO edao = new EventDAO();
-        e = edao.retrieveEvent(e);
-        System.out.println(e);
-        e.setEventDate(new Date(2015-1900, 11, 12));
-        e.setNoOfSlots(0);
-        JoinEvent j=(JoinEvent) e.getJoinEvents().iterator().next();
-        UserStatueDAO usd = new UserStatueDAO();
-        UserStatue us=usd.retrieveUserStatueById(3);
-        j.setUserStatue(us);    
-        e.getJoinEvents().add(e);
-        boolean b=edao.updateEvent(e);
-        System.out.println(b);
+//        EventDAO edao = new EventDAO();
+////        e = edao.retrieveEvent(e);
+//        System.out.println(e);
+//        e.setEventDate(new Date(2015-1900, 11, 12));
+//        e.setNoOfSlots(0);
+//        JoinEvent j=(JoinEvent) e.getJoinEvents().iterator().next();
+//        UserStatueDAO usd = new UserStatueDAO();
+//        UserStatue us=usd.retrieveUserStatueById(3);
+//        j.setUserStatue(us);    
+//        e.getJoinEvents().add(e);
+//        boolean b=edao.updateEvent(e);
+//        System.out.println(b);
     }
     
 //    

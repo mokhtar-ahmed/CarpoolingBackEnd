@@ -14,7 +14,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import pojo.Event;
-import util.EventUtil;
+//import util.EventUtil;
 
 /**
  *
@@ -65,18 +65,18 @@ public class TestLogic {
 //         }
 //     }
     
-    public static void main(String args[])
-    {
-        try {
-            JSONObject j = new JSONObject();
-            j.put("idEvent", 1);
-            EventUtil e = new EventUtil();
-            Event event=e.comvertToEventObject(j);
-            System.out.println(event);
-            System.out.println(event.getId());
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        }
-    }
+//    public static void main(String args[])
+//    {
+//        try {
+//            JSONObject j = new JSONObject();
+//            j.put("idEvent", 1);
+//            EventUtil e = new EventUtil();
+//            Event event=e.comvertToEventObject(j);
+//            System.out.println(event);
+//            System.out.println(event.getId());
+//        } catch (JSONException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
     
 }
