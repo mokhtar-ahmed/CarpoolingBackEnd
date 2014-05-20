@@ -58,7 +58,7 @@ public class AddUserToCircle {
                   System.out.println(temp.getInt("userId"));
                   u.setId(temp.getInt("userId"));
                   u = userImp.retrieveUserById(u);
-                  ExistIn existIn = new  ExistIn(u, c, "NOT");
+                  ExistIn existIn = new  ExistIn(u, c, "false");
                   circleImp.addUserToCircle(existIn);
                    JSONObject temp2 = new JSONObject();
                    

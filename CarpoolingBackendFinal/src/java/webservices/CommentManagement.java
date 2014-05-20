@@ -7,13 +7,9 @@
 package webservices;
 
 import dao.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -23,33 +19,38 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import pojo.*;
-import util.AppUtill;
+import util.ApplicatipnUtil;
+import util.CommentUtil;
+import webservicesInterfaces.CommentManagementInt;
+
 /**
  *
  * @author Nourhan
  */
 @Path("/comment")
-public class CommentManagement {
+public class CommentManagement implements CommentManagementInt{
+    @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/getAllComments")
-        public JSONObject retrieveEventComments(String input)
-    {
+    public String retrieveEventComments(String input) {
         try {
             JSONObject event = new JSONObject(input);
             EventDAO edao = new EventDAO();
+            
             int id = event.getInt("idEvent");
-            Event myEvent = new Event();
-            myEvent.setId(id);
-            myEvent = edao.retrieveEvent(myEvent);
-            Set comments=myEvent.getComments();
-            Comment comment;
-            JSONArray allComments = new JSONArray();
-            Object[] commentss =comments.toArray();
-            for(int i=0;i<comments.size();i++)
+            Event myEvent=edao.retrieveEvent(id);
+            if(myEvent!=null)
             {
-                comment=(Comment)commentss[i];
+            Set comments=myEvent.getComments();
+            
+            JSONArray allComments = new JSONArray();
+            int i=0;
+            for (Iterator it = comments.iterator(); it.hasNext();) 
+            {
+                Comment comment = (Comment)it.next();
+                
                 //CommentID
                 int commentId = comment.getId();
                 //user
@@ -58,7 +59,9 @@ public class CommentManagement {
                 String usename=comment.getUser().getUsername();
                 String image=comment.getUser().getUserImage();
                 String email =comment.getUser().getEmail();
+                
                 JSONObject user =new JSONObject();
+                
                 user.put("Userid", userId);
                 user.put("usernam",usename );
                 user.put("rank",rank );
@@ -66,118 +69,109 @@ public class CommentManagement {
                 user.put("email",email );
                 Date date=comment.getCommentDate();
                 String text=comment.getCommentText();
+                
                 JSONObject commentobj = new JSONObject();
                 commentobj.put("id", commentId);
                 commentobj.put("CommentOwner", user);
                 commentobj.put("CommentText", text);
                 commentobj.put("date", date);
                 allComments.put(i, commentobj);
+                
+                i++;
             }
-            AppUtill au = new AppUtill();
-            JSONObject output=au.reponsArray(allComments);
-            return output;
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-                return null;
+            
+            JSONObject jsonOutput = new JSONObject();
+            jsonOutput.put("HasError", false);
+            jsonOutput.put("HasWarning", false);
+            jsonOutput.put("FaultsMsg", "");
+            jsonOutput.put("ResponseValue",allComments);
+            
+            return  jsonOutput.toString();
             }
+            else
+                return new ApplicatipnUtil().jsonException("this even's id t not found");
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+            return new ApplicatipnUtil().jsonException("you have json Exception ");
+        }
     }
+    @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/addComment")
-    public JSONObject addComment(String input)
-    {
-        Comment comm = new Comment();
-        EventDAO edao = new EventDAO();
-        UserDAO udao = new UserDAO();
-        CommentDAo cda = new CommentDAo();
+    public String addComment(String input) {
         try {
-            JSONObject comment = new JSONObject(input);
             
-            if(!comment.isNull("event"))
-            {
-             JSONObject event=comment.getJSONObject("event");
-                int eventId=event.getInt("id");
-                Event myEvent = new Event();
-                myEvent.setId(eventId);
-                myEvent=edao.retrieveEvent(myEvent);
-                comm.setEvent(myEvent);
-            }
-            if(!comment.isNull("owner"))
-            {
-                JSONObject user=comment.getJSONObject("owner");
-                    int userId=user.getInt("id");
-                    User myUser=udao.retrieveUserById(userId);
-                    comm.setUser(myUser);
-            }
-            if(!comment.isNull("text"))
-            {
-                String txt= comment.getString("text");
-                comm.setCommentText(txt);
-            }
-            if(!comment.isNull("date"))
-            {
-                String d = comment.getString("date");
-                DateFormat df = new SimpleDateFormat("yyy-MM-dd hh:mm:ss");
-                Date date = df.parse(d);
-                comm.setCommentDate(date);
-            }
+            JSONObject commentJson = new JSONObject(input);
+            CommentDAO cdao = new CommentDAO();
+            Comment comment = new CommentUtil().convertFromJsonToJava(commentJson);
+            
             JSONObject jsonOutput=new JSONObject();
             JSONObject commentId=new JSONObject();
-            boolean b =cda.addComment(comm);
-            if(b)
+            if(comment!=null)
             {
-                Comment output=cda.retrieveComment(comm);
-               commentId.put("commentID", output.getId());
-               jsonOutput.put("HasError", false);
-               jsonOutput.put("HasWarning", false);
-               jsonOutput.put("FaultsMsg", "");
-               jsonOutput.put("ResponseValue",commentId);
+                boolean b =cdao.addComment(comment);
+                if(b)
+                {
+                    Comment output=cdao.retrieveCommentbyExample(comment);
+                    commentId.put("commentID", output.getId());
+                    jsonOutput.put("HasError", false);
+                    jsonOutput.put("HasWarning", false);
+                    jsonOutput.put("FaultsMsg", "");
+                    jsonOutput.put("ResponseValue",commentId);
+                    
+                    return jsonOutput.toString();
+                }
+                else
+                {
+                    return new ApplicatipnUtil().jsonException("you comment not added");
+                }
             }
-            return  jsonOutput;
+            else
+                return new ApplicatipnUtil().jsonException("problem with json you send");
             
         } catch (JSONException ex) {
             ex.printStackTrace();
-            return null;
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-            return null;
+            return new ApplicatipnUtil().jsonException("you have json Exception ");
         }
-        
     }
+    @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/deleteComments")
-    public JSONObject deleteComment(String input)
-    {
+    public String deleteComment(String input){
+        
         try {
-            JSONObject comm= new JSONObject(input);
-            int id=comm.getInt("id");
-            Comment comment = new Comment();
-            comment.setId(id);
-            CommentDAo cdao= new CommentDAo();
-            comment = cdao.retrieveComment(comment);
+            CommentDAO cdao= new CommentDAO();
+            JSONObject commentJson= new JSONObject(input);
+            int id=commentJson.getInt("id");
+            
+            Comment comment = cdao.retrieveComment(id);
+            System.out.println(comment);
             JSONObject jsonOutput=new JSONObject();
             JSONObject commentjson=new JSONObject();
             if(comment!=null)
             {
-            boolean b =cdao.deleteComment(comment);
-            if(b)
-            {
-                commentjson.put("isDeleted", "true");
-               jsonOutput.put("HasError", false);
-               jsonOutput.put("HasWarning", false);
-               jsonOutput.put("FaultsMsg", "");
-               jsonOutput.put("ResponseValue",commentjson);
-               return jsonOutput;
+                boolean b =cdao.deleteComment(comment);
+                if(b)
+                {
+                    commentjson.put("isDeleted", "true");
+                    jsonOutput.put("HasError", false);
+                    jsonOutput.put("HasWarning", false);
+                    jsonOutput.put("FaultsMsg", "");
+                    jsonOutput.put("ResponseValue",commentjson);
+                    return jsonOutput.toString();
+                }
+                else
+                    return new ApplicatipnUtil().jsonException("you comment not deleted");                
             }
-            }
-            return null;
-            
+            else
+                return new ApplicatipnUtil().jsonException("This comment not found in database");
         } catch (JSONException ex) {
             ex.printStackTrace();
-            return null;
+            return new ApplicatipnUtil().jsonException("you have json Exception ");
         }
     }
 }

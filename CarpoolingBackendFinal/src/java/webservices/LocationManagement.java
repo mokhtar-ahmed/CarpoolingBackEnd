@@ -1,8 +1,13 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
 package webservices;
 
-
-import dao.*;
+import util.ApplicatipnUtil;
+import dao.LocationDAO;
 import java.util.Iterator;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -13,57 +18,49 @@ import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import pojo.*;
+import pojo.Location;
+import webservicesInterfaces.LocationManagementInt;
 
 /**
  *
  * @author Nourhan
  */
-@Path("location")
-public class LocationManagement {
-    
-    public static final String ID="id";
-    public static final String LONGITUDE="longitude";
-    public static final String LATTITUDE="lattitude";
-    public static final String ALTITUDE="altitude";
-    public static final String ADDRESS="address";
-    
+public class LocationManagement implements LocationManagementInt{
+
+    @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/allLocations")
-    public String retrieveAllLocation()
-    {
+    @Path("/allLocation")
+    public String retrieveAllLocation() {
         
-        System.out.println("enter to retrive all locations ***********");
         JSONArray allAdresses = new JSONArray();
-        
+        JSONObject jsonOutput = new JSONObject();
         try {
             LocationDAO locationDAO = new LocationDAO();
             List<Location> l =locationDAO.retrieveAllLocation();
             Iterator<Location> iterator =  l.iterator();
-            
+            int i=0;
             while(iterator.hasNext())
             {
                 Location myLocation=iterator.next();
-                
                 int id=myLocation.getId();
+                String address=myLocation.getAddress();
                 JSONObject locatoinJson= new JSONObject();
-                
-                locatoinJson.put(ID, id);
-                locatoinJson.put(LONGITUDE, myLocation.getLongitude());
-                locatoinJson.put(LATTITUDE,myLocation.getLattitude());
-                locatoinJson.put(ALTITUDE, myLocation.getAltitude());
-                locatoinJson.put(ADDRESS, myLocation.getAddress());
-                allAdresses.put(locatoinJson);
-               
+                locatoinJson.put("id", id);
+                locatoinJson.put("address", address);
+                allAdresses.put(i, locatoinJson);
+                i++;
             }
-            
+            jsonOutput.put("HasError", true);
+            jsonOutput.put("HasWarning", false);
+            jsonOutput.put("FaultsMsg", "have problem");
+            jsonOutput.put("ResponseValue",allAdresses);
         }catch (JSONException ex) {
-                 ex.printStackTrace();
+                ex.printStackTrace();
+                return new ApplicatipnUtil().jsonException("you have json Exception ");
             }
-        System.out.println(allAdresses.toString());
-        return allAdresses.toString();
+        return jsonOutput.toString();
     }
     
 }
