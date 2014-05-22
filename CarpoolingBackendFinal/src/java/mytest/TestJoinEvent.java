@@ -26,7 +26,9 @@ public class TestJoinEvent {
 
             @Override
         public void run() {
-                User user = new UserImp().retrieveUserById(1);
+            User u=new User();
+            u.setId(1);
+                User user = new UserImp().retrieveUserById(u);
                 Iterator it  =  user.getEvents().iterator();
                 Iterator it1 =  user.getCircles().iterator();
            

@@ -6,12 +6,14 @@
 
 package dao;
 
-import static dao.UserImp.session;
 import java.util.List;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import pojo.Circle;
 import pojo.ExistIn;
+import pojo.ExistInId;
 import pojo.User;
 
 /**
@@ -39,7 +41,7 @@ public class CircleImp implements CircleInt{
     @Override
     public List<Circle> retrieveUserCircles(User user){
         /*Session session=Controller.sessionFactory.openSession();
-        String str1 = "from Users u, Circle c , ExistIn e where u.id=e.users.id and c.idCircle=e.circle.idCircle";
+        String str1 = "from User u, Circle c , ExistIn e where u.id=e.user.id and c.id=e.circle.id";
         
         Query q1 = session.createQuery(str1);//.setInteger("uid", user.getCircles().);
         List<Circle> list1 = q1.list();
@@ -49,7 +51,7 @@ public class CircleImp implements CircleInt{
         }
         return list1;*/
 //        Session session=Controller.getSessionFactory().openSession();
-        String str1 = "from Circle c where c.users.id =:uid";
+        String str1 = "from Circle c where c.user.id =:uid";
         Query q1 = session.createQuery(str1).setInteger("uid", user.getId());
         List<Circle> list1 = q1.list();
         return list1;
@@ -63,9 +65,9 @@ public class CircleImp implements CircleInt{
     }
 
     @Override
-    public void deleteCircle(Circle circle) {
-        Circle c=retrieveCircleById(circle);
-        emptyCircle(circle);
+    public void deleteCircle(Circle c) {
+//        Circle c=retrieveCircleById(circle);
+//        emptyCircle(circle);
         session.beginTransaction();
         session.delete(c);
         session.getTransaction().commit();
@@ -107,10 +109,10 @@ public class CircleImp implements CircleInt{
     @Override
     public void updateCircle(Circle circle,User user) {
         //needed to be seen 
-//        session.beginTransaction();
-//        ExistIn ex=new ExistIn(user, circle, "open");
-//        session.saveOrUpdate(ex);
-//        session.getTransaction().commit();
+        session.beginTransaction();
+        ExistIn ex=new ExistIn(user, circle, "open");
+        session.saveOrUpdate(ex);
+        session.getTransaction().commit();
     }
 
     @Override
@@ -149,8 +151,8 @@ public class CircleImp implements CircleInt{
         String s="from Circle c where c.id =:id";
         Query q = session.createQuery(s).setInteger("id",circle.getId()); 
         x=q.list();
-        session.beginTransaction();
-        session.getTransaction().commit();
+//        session.beginTransaction();
+//        session.getTransaction().commit();
         //session.close();
         if(!x.isEmpty())
             return x.get(0);
@@ -174,7 +176,7 @@ public class CircleImp implements CircleInt{
     @Override
     public Circle retrieveCircleByUserIdAndCircleName(Circle circle) {
 //        List<Circle> x;
-//        String s="from Circle c where c.circleName =:circleName and c.users.id =:id";
+//        String s="from Circle c where c.circleName =:circleName and c.user.id =:id";
 //        Query q = session.createQuery(s).setString("circleName", circle.getCircleName()).setInteger("id",circle.getUsers().getId()); 
 //        x=q.list();
 //        session.beginTransaction();
@@ -187,5 +189,50 @@ public class CircleImp implements CircleInt{
         return circle;
     }
 
+    @Override
+    public Circle retrieveUserCircleByName(int userId, String name) {
+        List<Circle> x;
+        String s="from Circle c where c.user.id =:uid and c.circleName =:cName";
+        Query q = session.createQuery(s).setInteger("uid",userId).setString("cName", name); 
+        x=q.list();
+//        session.beginTransaction();
+//        session.getTransaction().commit();
+        //session.close();
+        if(!x.isEmpty())
+            return x.get(0);
+        else return null;
+    }
     
+    public ExistIn retrieveExistIn(ExistInId existInId)
+    {
+        Criteria criteria= session.createCriteria(ExistIn.class)
+                .add(Restrictions.eq("id", existInId));
+        
+        List l = criteria.list();
+        
+        if(l.size()>0)
+        {
+            ExistIn existIn=(ExistIn) l.get(0);
+            return existIn;
+        }
+        else{
+            return null;
+        }
+    }
+    
+    public boolean updateExistIn(ExistIn existIn)
+    {
+        try{
+            session.beginTransaction();
+            session.saveOrUpdate(existIn);  
+            session.getTransaction().commit();
+            return true;
+        }
+        catch(RuntimeException ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
 }

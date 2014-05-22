@@ -6,17 +6,14 @@
 
 package dao;
 
-import static dao.CircleImp.session;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.EntityMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import pojo.Circle;
-import pojo.ExistIn;
+import pojo.Phone;
 import pojo.User;
 
 /**
@@ -48,37 +45,27 @@ public class UserImp implements UsersInt{
         session.getTransaction().commit();
     }
 
-  @Override
+    @Override
     public User retrieveUserByUserName(User user) {
         List<User> x;
         String s="from User u where u.username =:username";
         Query q = session.createQuery(s).setString("username",user.getUsername()); 
         x=q.list();
-        session.beginTransaction();
-        session.getTransaction().commit();
+//        session.beginTransaction();
+//        session.getTransaction().commit();
         
         if(!x.isEmpty())
             return x.get(0);
         else return null;
     }
-    
-       public User retrieveUserByUserNameAndPassword(User user) {
-        Criteria criteria = session.createCriteria(User.class);
-        Criterion username =  Restrictions.eq("username",user.getUsername());  
-        Criterion password =  Restrictions.eq("password",user.getPassword()); 
-        criteria =  criteria.add(username);
-        criteria =  criteria.add(password);
-        User selectedUser = (User) criteria.uniqueResult();
-        return selectedUser;
-    }
-    
+
     @Override
     public User retrieveUserById(User user) {
+        session.beginTransaction();
         List<User> x;
         String s="from User u where u.id =:uid";
         Query q = session.createQuery(s).setInteger("uid",user.getId()); 
         x=q.list();
-        session.beginTransaction();
         session.getTransaction().commit();
         
         if(!x.isEmpty())
@@ -86,11 +73,9 @@ public class UserImp implements UsersInt{
         else return null;
     }
     
-    
-    
     public void edit(User user){
         session.beginTransaction();
-        session.merge(user);
+        session.saveOrUpdate(user);
         session.getTransaction().commit();
     }
     
@@ -114,11 +99,52 @@ public class UserImp implements UsersInt{
         return registeredFriends;
         
     }
-     public User retrieveUserById(int id)
-    {
+
+    @Override
+    public User retrieveUserByPhone(String p) {
+//        session.beginTransaction();
+        List<User> x;
+        String s="from User u where u.phone =:phone";
+        Query q = session.createQuery(s).setString("phone",p); 
+        x=q.list();
+//        session.getTransaction().commit();
+        
+        if(!x.isEmpty())
+            return x.get(0);
+        else return null;
+    }
+
+    @Override
+    public User retrieveUserBymail(String m) {
+//        session.beginTransaction();
+        List<User> x;
+        String s="from User u where u.email =:uid";
+        Query q = session.createQuery(s).setString("uid",m); 
+        x=q.list();
+//        session.getTransaction().commit();
+        
+        if(!x.isEmpty())
+            return x.get(0);
+        else return null;
+    }
+
+    @Override
+    public boolean ifExist(String phone) {
+        List<Phone> x;
+        String s="from Phone p where p.phone =:ph";
+        Query q = session.createQuery(s).setString("ph",phone); 
+        x=q.list();
+        if(!x.isEmpty())
+            return true;
+        else return false;
+    }
+    
+    public User retrieveUserByUserNameAndPassword(User user) {
         Criteria criteria = session.createCriteria(User.class);
-        Criterion userId =  Restrictions.eq("id",id);           
-        criteria =  criteria.add(userId);
+        Criterion username =  Restrictions.eq("username",user.getUsername());  
+        Criterion password =  Restrictions.eq("password",user.getPassword()); 
+        criteria =  criteria.add(username);
+        criteria =  criteria.add(password);
         User selectedUser = (User) criteria.uniqueResult();
         return selectedUser;
     }

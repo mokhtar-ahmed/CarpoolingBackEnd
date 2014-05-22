@@ -6,6 +6,7 @@
 
 package dao;
 
+import pojo.Phone;
 import pojo.User;
 
 /**
@@ -17,5 +18,7 @@ public interface UsersInt {
     public User retrieveUserByUserName(User user);
     public User retrieveUserById(User user);
     public void edit(User user);
-    
+    public User retrieveUserByPhone(String p);
+    public User retrieveUserBymail(String m);
+    public boolean ifExist(String phone); 
 }

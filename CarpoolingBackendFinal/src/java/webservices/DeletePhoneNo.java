@@ -24,23 +24,29 @@ import pojo.User;
  *
  * @author Rehab
  */
-@Path("/deletePhone")
 public class DeletePhoneNo {
-    @Path("/delete")
+    @Path("delete")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public JSONObject deletePhonee(@FormParam(value = "phone")JSONObject phone)
     {
+        JSONObject status=new JSONObject();
         try {
             User u=new User();
             u.setId(phone.getInt("userId"));
             UserImp ui=new UserImp();
             u=ui.retrieveUserById(u);
-            Phone p=new Phone(phone.getString("idPhone"), u);
+            String pp=phone.getString("Phone");
+            if(u==null||!ui.ifExist(pp))
+            {
+                status.put("deleted", "false");
+                status.put("reason", "phone doesn't exists aslan");
+                return status;
+            }
+            Phone p=new Phone(pp, u);
             PhoneImp pi=new PhoneImp();
             pi.deletePhone(p);
             
-            JSONObject status=new JSONObject();
             status.put("deleted", "true");
             return status;
             

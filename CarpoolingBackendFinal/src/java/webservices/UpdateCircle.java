@@ -25,7 +25,7 @@ import pojo.User;
  *
  * @author Rehab
  */
-@Path("/updateCircle")
+@Path("updateCircle")
 public class UpdateCircle {
     
     @POST
@@ -34,6 +34,7 @@ public class UpdateCircle {
     @Path("/update")
     public JSONObject updateCirclee(@FormParam(value = "circle")JSONObject circle)
     {
+        JSONObject status=new JSONObject();
         try {
             System.out.println(circle.toString());
             User owner=new User();
@@ -54,11 +55,18 @@ public class UpdateCircle {
             
             
             CircleImp circleImp=new CircleImp();
+            if(circleImp.retrieveUserCircleByName(circle.getInt("userId"), circle.getString("circleName"))!=null)
+            {
+                status.put("added", "false");
+                status.put("reson", "there is circle with same name");
+                return status;
+            }
+            //===========
+            
             circleImp.editCircle(circle1);
-            circle1=circleImp.retrieveCircleByUserIdAndCircleName(circle1);
+//            circle1=circleImp.retrieveCircleByUserIdAndCircleName(circle1);
             /////////////////////////
             
-            JSONObject status=new JSONObject();
             status.put("updated", "true");
             return status;
         } catch (JSONException ex) {

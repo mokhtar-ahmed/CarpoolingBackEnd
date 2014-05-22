@@ -24,27 +24,42 @@ import pojo.User;
  *
  * @author Rehab
  */
-@Path("/addPhone")
+@Path("addPhone")
 public class AddPhoneNo {
     
-    @Path("/add")
+    @Path("add")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public JSONObject addPhonee(@FormParam(value = "phone")JSONObject phone)
     {
+        JSONObject status=new JSONObject();
         try {
             User u=new User();
             u.setId(phone.getInt("userId"));
+            String pp=phone.getString("Phone");
             UserImp ui=new UserImp();
             u=ui.retrieveUserById(u);
-            Phone p=new Phone(phone.getString("idPhone"), u);
+            if(u!=null){
+                if(u.getPhone().equals(pp)||ui.ifExist(pp))
+                {
+                    status.put("added", "false");
+                    status.put("reason", "phone already exists in db");
+                    return status;
+                }
+            Phone p=new Phone(phone.getString("Phone"), u);
             PhoneImp pi=new PhoneImp();
             pi.addPhone(p);
             
-            JSONObject status=new JSONObject();
             status.put("added", "true");
             return status;
-            
+            }
+            else 
+            {
+                status.put("added", "false");
+                status.put("reason", "user doesn't exist in DB");
+                return status;
+            }
+         
         } catch (JSONException ex) {
             Logger.getLogger(AddPhoneNo.class.getName()).log(Level.SEVERE, null, ex);
         }

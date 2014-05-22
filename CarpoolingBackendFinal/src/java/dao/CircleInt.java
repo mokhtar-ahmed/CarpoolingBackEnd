@@ -31,5 +31,6 @@ public interface CircleInt {
     public List<User> retrieveCircleUsers(Circle circle);//
     public Circle retrieveCircleById(Circle circle);
     public ExistIn retrieveExistInUser(ExistIn ex);
+    public Circle retrieveUserCircleByName(int userId,String name);
     
 }

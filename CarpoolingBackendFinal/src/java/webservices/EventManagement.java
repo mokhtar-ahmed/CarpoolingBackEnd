@@ -29,43 +29,6 @@ import org.codehaus.jettison.json.JSONObject;
 @Path("/event")
 public class EventManagement implements webservicesInterfaces.EventManagementInt{
 
-      @POST
-      @Produces(MediaType.APPLICATION_JSON)
-      @Consumes(MediaType.APPLICATION_JSON)
-      @Path("/getUserJoinEvents")
-
-      public String getAllUserJoinEvents(String str){ 
-           
-      System.out.println("enter to user join events");
-      JSONArray outputEvents = new JSONArray();
-           try {
-                JSONObject  input = new JSONObject(str); 
-                int userId= input.getInt("userId");
-                System.out.println("user id at getAllUserJoinEvents  = " +userId);
-
-                User user = new UserDAO().retrieveUserById(userId);
-                Iterator it =  user.getJoinEvents().iterator();
-       
-            while(it.hasNext()){
-
-                Event ev = ((JoinEvent)it.next()).getEvent();
-
-                System.out.println(ev.getEventName());
-
-                JSONObject ob = new JSONObject();
-                
-                ob.put("id",ev.getId());
-                ob.put("name",ev.getEventName());
-                ob.put("date",ev.getEventDate().toString());
-       
-                outputEvents.put(ob);
-             }
-           
-               } catch (JSONException ex) {
-                        ex.printStackTrace();
-               }
-            return outputEvents.toString();
-      }
     @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -151,7 +114,8 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
                 for (Iterator it = joinEvents.iterator(); it.hasNext();) 
                {
                    JoinEvent joinEvent = (JoinEvent)it.next();
-                   new NewEventUtil().sendNotificationToUser(joinEvent,message,statue);
+                   if(joinEvent.getUserStatue().getId()!=6)
+                       new NewEventUtil().sendNotificationToUser(joinEvent,message,statue);
                }
                 JSONObject updated = new JSONObject();
                 JSONObject jsonOutput = new JSONObject();
@@ -285,9 +249,6 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
     @Path("/retrieveAllUserEvents")
     public String retrieveAllUserEvents(String input) {
         try {
-            
-           
-            
             EventDAO eventDAO = new EventDAO();            
             JoinEventDAO joinEventDAO= new JoinEventDAO();
             JSONObject myUser = new JSONObject(input);

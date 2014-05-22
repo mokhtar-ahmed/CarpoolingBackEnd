@@ -26,16 +26,16 @@ import pojo.User;
  *
  * @author Rehab
  */
-@Path("/deleteUserFromCircle")
+@Path("deleteUserFromCircle")
 public class DeleteUserFromCircle {
 
     @POST
-    
-    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/deleteUser")
-    public String deleteUserFromCirclee(@FormParam(value = "exist") JSONObject exist) {
+    public JSONObject deleteUserFromCirclee(@FormParam(value = "exist") JSONObject exist) {
+        JSONObject status=new JSONObject();
         try {
-            
             User u = new User();
             u.setId(exist.getInt("userId"));
             UserImp userImp=new UserImp();
@@ -49,11 +49,16 @@ public class DeleteUserFromCircle {
             ExistIn existIn = new ExistIn(u, c, "0");
             ExistInId id = new ExistInId(u.getId(), c.getId());
             existIn.setId(id);
-            circleImp.removeUserFromCircle(existIn);
             
-            JSONObject status=new JSONObject();
+            if(circleImp.retrieveExistInUser(existIn)==null)
+            {
+                status.put("deleted", "false");
+                status.put("reason","user doesn't exist in this circle");
+                return status;
+            }
+            circleImp.removeUserFromCircle(existIn);
             status.put("deleted", "true");
-            return status.toString();
+            return status;
             
         } catch (JSONException ex) {
             Logger.getLogger(DeleteUserFromCircle.class.getName()).log(Level.SEVERE, null, ex);

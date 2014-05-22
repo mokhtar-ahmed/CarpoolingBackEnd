@@ -7,8 +7,6 @@
 package webservices;
 
 import dao.CircleImp;
-import dao.ExistInImp;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.FormParam;
@@ -17,7 +15,6 @@ import javax.ws.rs.Path;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import pojo.Circle;
-import pojo.ExistIn;
 import pojo.User;
 
 /**
@@ -28,41 +25,26 @@ import pojo.User;
 public class deleteCircle {
     @POST
     @Path("/delete")
-    public String deleteCirclee(@FormParam(value = "circleId")String circleId)
+    public String deleteCirclee(@FormParam(value = "circle")String circle)
     {
-        
         try {
-            JSONObject o=new JSONObject(circleId);
+            JSONObject o=new JSONObject(circle);
             Circle c = new Circle();
             c.setId(o.getInt("circleId"));
-             JSONObject status=new JSONObject();
-          
-                ExistInImp existInImpObj = new ExistInImp();
-                List<ExistIn> circleRelations = existInImpObj.isCircleEmpty(o.getInt("circleId"));
-                CircleImp circleimp = new CircleImp();
-
-                if(circleRelations.isEmpty())
-                {
-
-                    circleimp.deleteCircle(c);
-                }
-                else
-                {
-                    for(int i=0;i<circleRelations.size();i++)
-                    {
-                        existInImpObj.deleteExistIn(circleRelations.get(i));
-                    }
-
-                    circleimp.deleteCircle(c);
-                }
-  
-           
+            CircleImp circleimp = new CircleImp();
+            c=circleimp.retrieveCircleById(c);
+            if(c==null)
+            {
+                JSONObject l=new JSONObject();
+                l.put("result", "circle doesn't exist");
+                return l.toString();
+            }
+            circleimp.emptyCircle(c);
+            circleimp.deleteCircle(c);
+            JSONObject status=new JSONObject();
             status.put("deleted", "true");
+            
             return status.toString();
-          
-            
-            
-            
         } catch (JSONException ex) {
             Logger.getLogger(deleteCircle.class.getName()).log(Level.SEVERE, null, ex);
         }

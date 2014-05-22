@@ -6,12 +6,10 @@
 package webservices;
 
 import dao.CircleImp;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -34,15 +32,20 @@ public class viewCircleDetails {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{view}")   
-    public JSONObject viewcircle(@PathParam(value = "user") String circle) {
+    public String viewcircle(@PathParam(value = "user") String circle) {
         try {
             System.out.println(circle);
-            JSONObject o =new JSONObject();
+            JSONObject o =new JSONObject(circle);
             Circle c1=new Circle();
             c1.setId(o.getInt("circleId"));
             CircleImp circleimp = new CircleImp();
             Circle c = circleimp.retrieveCircleById(c1);
-
+            if(c==null)
+            {
+                JSONObject n=new JSONObject();
+                n.put("result", "circle not found");
+                return n.toString();
+            }
             JSONObject circleData = new JSONObject();
             circleData.put("circleName", c.getCircleName());
             circleData.put("circleId", c.getId());//{circleId","circleName"}
@@ -69,7 +72,7 @@ public class viewCircleDetails {
             JSONObject circle1 = new JSONObject();
             circle1.put("circle", circleData);
             circle1.put("users", u);
-            return circle1;
+            return circle1.toString();
         } catch (JSONException ex) {
             Logger.getLogger(viewCircleDetails.class.getName()).log(Level.SEVERE, null, ex);
         }

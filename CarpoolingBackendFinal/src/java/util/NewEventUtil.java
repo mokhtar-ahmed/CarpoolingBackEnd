@@ -1,15 +1,13 @@
 package util;
 
 import PushNotificationUtil.MessageUtil;
-import PushNotificationUtil.Messages;
-import dao.CircleDAO;
+import dao.CircleImp;
 import dao.NotificationDAO;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.codehaus.jettison.json.JSONObject;
 import pojo.*;
 
 /*
@@ -27,8 +25,9 @@ public class NewEventUtil
     public Set<User> getUsersExistInCircle(int id)
     {
         Set<User> users = new HashSet(0);//cjeck it
-        
-        Circle circle = new CircleDAO().retrieveCircleById(id);
+        Circle c=new Circle();
+            c.setId(id);
+        Circle circle = new CircleImp().retrieveCircleById(c);
         Set existIn =circle.getExistIns();
         for (Iterator it = existIn.iterator(); it.hasNext();)
         {

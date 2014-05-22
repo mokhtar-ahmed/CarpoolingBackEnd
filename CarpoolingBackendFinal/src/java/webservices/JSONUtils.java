@@ -12,7 +12,7 @@ class JSONUtils {
     public static final String NAME = "name";
     public static final String NO_OF_SLOTS = "noOfSlots";
     public static final String USER = "user";
-   public static JSONObject ConvertEventToJson(Event event) {
+    public static JSONObject ConvertEventToJson(Event event) {
       
        
        JSONObject obj = new JSONObject();

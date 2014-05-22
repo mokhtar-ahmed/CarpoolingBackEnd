@@ -9,8 +9,10 @@ package webservices;
 import PushNotificationUtil.MessageUtil;
 import PushNotificationUtil.Messages;
 import dao.*;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
@@ -19,19 +21,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONArray;
+import pojo.*;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import pojo.*;
 import util.ApplicatipnUtil;
 import util.NewEventUtil;
-import util.UserUtil;
 import webservicesInterfaces.UserManagementInt;
 
 /**
  *
  * @author Nourhan
  */
-@Path("user")
 public class UserManagement implements UserManagementInt{
 
     @Override
@@ -46,6 +46,10 @@ public class UserManagement implements UserManagementInt{
             
             int circleId =myInput.getInt("circleId");
             int userId  =myInput.getInt("userId");
+            Circle circle = new CircleDAO().retrieveCircleById(userId);
+            User user = new UserDAO().retrieveUserById(userId);
+            if(circle!=null && user!=null)
+            {
             ExistInId existInId = new ExistInId(userId, circleId);
             ExistIn existIn = cdao.retrieveExistIn(existInId);
             if(existIn!=null)
@@ -65,7 +69,9 @@ public class UserManagement implements UserManagementInt{
             }
             else
                 return new ApplicatipnUtil().jsonException("this user not exsist in that circle");
-        
+            }
+            else
+                return new ApplicatipnUtil().jsonException("this circle or user is not found");
         } catch (JSONException ex) {
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("you have json Exception ");
@@ -84,6 +90,10 @@ public class UserManagement implements UserManagementInt{
             
             int circleId =myInput.getInt("circleId");
             int userId  =myInput.getInt("userId");
+            Circle circle = new CircleDAO().retrieveCircleById(userId);
+            User user = new UserDAO().retrieveUserById(userId);
+            if(circle!=null && user!=null)
+            {
             ExistInId existInId = new ExistInId(userId, circleId);
             ExistIn existIn = cdao.retrieveExistIn(existInId);
             if(existIn!=null)
@@ -103,6 +113,9 @@ public class UserManagement implements UserManagementInt{
             }
             else
                 return new ApplicatipnUtil().jsonException("this user not exsist in that circle");
+        }
+        else
+            return new ApplicatipnUtil().jsonException("Circle or user not found");
         
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -121,38 +134,65 @@ public class UserManagement implements UserManagementInt{
             JSONObject myInput = new JSONObject(input);
             int eventId =myInput.getInt("eventId");
             int userId  =myInput.getInt("userId");
-            JoinEvent myJoinEvent=jedao.retrieveJoinEvent(userId, eventId);
-            Event myEvent = myJoinEvent.getEvent();
-            if(myJoinEvent!= null)
+            Event event =new EventDAO().retrieveEvent(eventId);
+            User user = new UserDAO().retrieveUserById(userId);
+            if(event!=null && user!=null) 
             {
-                JSONObject join = new JSONObject();
-                JSONObject jsonOutput = new JSONObject();
-            
-                int avalibleSlots = myEvent.getNoOfSlots() - new ApplicatipnUtil().numOfAttendUsers(eventId);
-                
-                if(avalibleSlots >=1)
+                if(!user.equals(event.getUser()))
                 {
-                    UserStatueDAO usdao = new UserStatueDAO();
-                    myJoinEvent.setUserStatue(usdao.retrieveUserStatueById(3));
-                    //change user state in database
-                    jedao.updateJoinEvent(myJoinEvent);
-                    String message =myJoinEvent.getUser().getUsername()+" "+Messages.JOIN_EVENT+" "+myEvent.getEventName();
+                    JoinEvent myJoinEvent=jedao.retrieveJoinEvent(userId, eventId);
+                    //Event myEvent = myJoinEvent.getEvent();
+                    if(myJoinEvent!= null)
+                    {
+                        JSONObject join = new JSONObject();
+                        JSONObject jsonOutput = new JSONObject();
+            
+                        int avalibleSlots = event.getNoOfSlots() - new ApplicatipnUtil().numOfAttendUsers(eventId);
+                        
+                        if(avalibleSlots >=1)
+                        {
+                            UserStatueDAO usdao = new UserStatueDAO();
+                            myJoinEvent.setUserStatue(usdao.retrieveUserStatueById(3));
+                            //change user state in database
+                            JoinEvent e = new JoinEvent();
+                            e.setEvent(event);
+                            e.setId(new JoinEventId(eventId, userId));
+                            e.setUserStatue(usdao.retrieveUserStatueById(3));
+                            e.setUser(user);                    
+                            jedao.updateJoinEvent(e);
+                            String message =myJoinEvent.getUser().getUsername()+" "+Messages.JOIN_EVENT+" "+event.getEventName();
                     
-                    new NewEventUtil().sendNotificationToUser(myJoinEvent, message, "join");
-                    jsonOutput.put("HasError", false);
-                    jsonOutput.put("HasWarning", false);
-                    jsonOutput.put("FaultsMsg", "");
-                    join.put("join", "true");
-                    jsonOutput.put("ResponseValue",join);
-                    
-                    return  jsonOutput.toString();
+                            ///////////////////
+                            NotificationDAO ndao = new NotificationDAO();    
+                            Notification n = new Notification(myJoinEvent.getEvent().getUser(),
+                                myJoinEvent.getEvent(), new Date(),"unread","join");
+                            ndao.addNotification(n);
+                            String userID=myJoinEvent.getUser().getPushNotificationId();
+                            try {
+                                int out=MessageUtil.sendMessage( userID, message);
+                                System.out.println(out+"---------------------------------------------");
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                            //////////////////////////
+                            jsonOutput.put("HasError", false);
+                            jsonOutput.put("HasWarning", false);
+                            jsonOutput.put("FaultsMsg", "");
+                            join.put("join", "true");
+                            jsonOutput.put("ResponseValue",join);
+                            return  jsonOutput.toString();
+                        }
+                        else
+                            return new ApplicatipnUtil().jsonException("no avilable slots");
+                    }
+                    else
+                        return new ApplicatipnUtil().jsonException("this user not invited to event");
                 }
                 else
-                    return new ApplicatipnUtil().jsonException("no avilable slots");
+                    return new ApplicatipnUtil().jsonException("this user is the owner of event");
             }
             else
-                return new ApplicatipnUtil().jsonException("this user not invited");
-            
+                return new ApplicatipnUtil().jsonException("user id or event id is not exsist");
         } catch (JSONException ex) {
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("you have json Exception ");
@@ -170,17 +210,25 @@ public class UserManagement implements UserManagementInt{
             JSONObject myInput = new JSONObject(input);
             int eventId =myInput.getInt("eventId");
             int userId  =myInput.getInt("userId");
+            
+            User user = new UserDAO().retrieveUserById(userId);
+            Event event = new EventDAO().retrieveEvent(eventId);
+            if(user!=null && event!=null)
+            {
             JoinEvent myJoinEvent=joinEventDAO.retrieveJoinEvent2(userId, eventId);
-            int solt =new ApplicatipnUtil().numOfAttendUsers(myJoinEvent.getEvent().getNoOfSlots());
-            System.out.println(solt);
-            System.out.println(myJoinEvent.getEvent().getNoOfSlots());
-            if(myJoinEvent!= null && myJoinEvent.getEvent().getNoOfSlots()- solt>0)
+            int solt =new ApplicatipnUtil().numOfAttendUsers(event.getNoOfSlots());
+            if(myJoinEvent!= null && event.getNoOfSlots()- solt>0)
             {
                 UserStatueDAO userStatueDAO = new UserStatueDAO();
                 UserStatue userStatue= userStatueDAO.retrieveUserStatueById(4);
                 myJoinEvent.setUserStatue(userStatue);
-                JoinEvent je = new JoinEvent(myJoinEvent.getId(), myJoinEvent.getUser(), myJoinEvent.getEvent(), userStatue);
-                joinEventDAO.updateJoinEvent(je);
+                JoinEvent e = new JoinEvent();
+                    e.setEvent(event);
+                    e.setId(new JoinEventId(eventId, userId));
+                    e.setUserStatue(new UserStatueDAO().retrieveUserStatueById(4));
+                    e.setUser(user);
+                    
+                    joinEventDAO.updateJoinEvent(e);
                 
 //                
                 String message =Messages.ACCEPT_REQUEST+" "+myJoinEvent.getEvent().getEventName();
@@ -202,6 +250,10 @@ public class UserManagement implements UserManagementInt{
             }
             else
                 return new ApplicatipnUtil().jsonException("this user not join or slots is complete");
+        }
+        else
+            return new ApplicatipnUtil().jsonException("Event or user not found");
+                
         } catch (JSONException ex) {
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("you have json Exception ");
@@ -265,123 +317,27 @@ public class UserManagement implements UserManagementInt{
             NotificationDAO notificationDAO = new NotificationDAO();
         
             Notification notification =notificationDAO.retrieveNotificationById(notificationId);
-            notification.setEventType("read");
-            notificationDAO.updateNotification(notification);
+            if(notification!=null)
+            {
+                notification.setEventType("read");
+                notificationDAO.updateNotification(notification);
         
-            JSONObject jsonOutput = new JSONObject();
-            JSONObject notific = new JSONObject();
-            jsonOutput.put("HasError", false);
-            jsonOutput.put("HasWarning", false);
-            jsonOutput.put("FaultsMsg", "");
-            notific.put("recieved", "true");
-            jsonOutput.put("ResponseValue",notific);
+                JSONObject jsonOutput = new JSONObject();
+                JSONObject notific = new JSONObject();
+                jsonOutput.put("HasError", false);
+                jsonOutput.put("HasWarning", false);
+                jsonOutput.put("FaultsMsg", "");
+                notific.put("recieved", "true");
+                jsonOutput.put("ResponseValue",notific);
         
-            return jsonOutput.toString();
-            
+                return jsonOutput.toString();
+            }
+            else
+                return new ApplicatipnUtil().jsonException("notification id is wrong");
         } catch (JSONException ex) {
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("you have json Exception ");
         }
-        
     }
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/newLogin")
-    public String newLogIn(String inpString) 
-    {
-
-        System.out.println("enter to login");
-
-        JSONObject userJson= new JSONObject();
-        JSONObject output = new JSONObject();
-
-        try {
-
-            JSONObject login = new JSONObject(inpString);
-
-            String username = login.getString("username");
-            String password = login.getString("password");
-
-            UserDAO udao = new UserDAO();
-
-            User user =udao.retrieveUserbyUsernamePass(username, password);
-
-            if(user != null){
-
-                UserUtil userUtil = new UserUtil();
-                userJson=userUtil.ConverttUserToJson(user);
-
-                output.put("HasError", "false");
-                output.put("HasWarning", "false");
-                output.put("FaultsMsg", "success");
-                output.put("ResponseValue",userJson);
-
-                JSONArray events = new JSONArray();
-                JSONArray circles = new JSONArray();
-
-                Iterator it1 =  user.getCircles().iterator();
-
-                Iterator it  =  user.getJoinEvents().iterator();
-
-
-            while(it.hasNext()){
-
-                JoinEvent jEvent =  (JoinEvent)it.next();
-                Event myEvent = jEvent.getEvent();
-
-               JSONObject eventJsonObj = new JSONObject();
-
-                int id = myEvent.getId();
-                String name = myEvent.getEventName();
-                Date date = myEvent.getEventDate();
-
-                eventJsonObj.put("idEvent", id);
-                eventJsonObj.put("eventName", name);
-                eventJsonObj.put("eventDate", date.toString());  
-                eventJsonObj.put("userStatue", myEvent.getEventStatue());
-
-                events.put(eventJsonObj);
-
-                System.out.println(events.toString());
-
-           }
-           while(it1.hasNext()){
-
-                Circle c = (Circle)it1.next();
-
-                JSONObject circledata = new JSONObject();
-
-                String name =  c.getCircleName();
-                int id = c.getId();
-
-                circledata.put("circleName",name);
-                circledata.put("circleId", id);  
-                circles.put(circledata);
-
-                System.out.println(circledata.toString());
-
-           }
-
-           output.put("circles", circles);
-           output.put("events" , events);
-
-            }else {
-
-                output.put("HasError", "false");
-                output.put("HasWarning", "false");
-                output.put("FaultsMsg", "not registered user");
-                output.put("ResponseValue",userJson);
-
-            }
-
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        }
-
-        System.out.println(output.toString());
-
-        return output.toString();
-    }
-
+    
 }

@@ -50,4 +50,16 @@ public class UserDAO {
         
         return user;
     }
+    
+    public List<Notification> retrieveAllNotific(int userId)
+    {
+        
+        Criteria criteria = session.createCriteria(Notification.class)
+                .add(Restrictions.eq("user.id",userId));
+        List<Notification> l = criteria.list();
+        
+        return l ;
+        
+    }
+    
 }

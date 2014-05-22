@@ -2,22 +2,22 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
+ *//*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 
 package webservices;
 
 
-import dao.CircleImp;
-import dao.UserDAO;
-import dao.UserImp;
+
+import dao.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -29,20 +29,19 @@ import pojo.Circle;
 import pojo.User;
 
 
+
 /**
  *
  * @author Rehab
  */
-@Path("/viewcircle")
-public class viewAllCircles {
-    
+@Path("/retrieveAllCircles")
+public class ViewAllCircles {
     @POST
-    @Path("/view")
+    @Path("/retrieve")
     @Produces(MediaType.TEXT_PLAIN)
-    public String viewCircles(@FormParam(value = "userId")String userId)//JSONObject user)
+    public String viewCircles(@FormParam(value = "userId")String userId)
     {
-        System.out.println("ENTEREEEEEEEEEEEEEEEEEED");
-               System.err.println("HELLLLLLLLLLLLLLLLLLLLLLLLLO");
+        System.err.println("errrrroooooooooooooooooooooooor");
         System.out.println("ENTEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEED");
         JSONObject userIdJSObj,circleJSObj;
         JSONArray userCirclesJSArray;
@@ -56,14 +55,17 @@ public class viewAllCircles {
             circleJSObj = new JSONObject();
             userCirclesJSArray = new JSONArray();
             System.out.println(userIdJSObj);
-            User user = new User();
-            user.setId(userIdJSObj.getInt("userId"));
-            selectedUser = userDao.retrieveUserById(user);
-            if(selectedUser == null)
+            User u=new User();
+            u.setId(userIdJSObj.getInt("userId"));
+            selectedUser = userDao.retrieveUserById(u);
+            
+            if(selectedUser==null)
             {
-               System.out.println("%%%%%%%%%%%%%%%%%%%%%%%5NULL");  
+                JSONObject o=new JSONObject();
+                o.put("result", "user not found");
+                return o.toString();
             }
-           
+                
             userCirclesSet = selectedUser.getCircles();
             
             System.out.println("Size of Set = "+ "   "+userCirclesSet.size());
@@ -77,21 +79,14 @@ public class viewAllCircles {
                 circleJSObj.put("circleImage", "EMPTY");
                 userCirclesJSArray.put(circleJSObj); }
 
+     
         } catch (JSONException ex) {
             ex.printStackTrace();
             return null ;
         }
         
         System.out.println("************************"+"        "+userCirclesJSArray.toString());
-        return  userCirclesJSArray.toString() ;
+        return  userCirclesJSArray.toString();
     }
-        @GET
-    @Path("/view1")
-    public String view()
-    {
-        
-        return "true";
-    }
-    
     
 }

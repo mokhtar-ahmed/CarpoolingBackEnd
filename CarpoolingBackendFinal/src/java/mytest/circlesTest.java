@@ -20,7 +20,9 @@ public class circlesTest {
     public static void main(String[] args){
     
           CircleImp circleimp = new CircleImp();
-        User us1 = new UserImp().retrieveUserById(1);
+          User u=new User();
+            u.setId(1);
+        User us1 = new UserImp().retrieveUserById(u);
         System.out.println(us1.getUsername());
         List<Circle> c=circleimp.retrieveUserCircles(us1);
         
