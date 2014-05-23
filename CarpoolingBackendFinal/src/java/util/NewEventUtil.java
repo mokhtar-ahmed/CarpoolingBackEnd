@@ -1,6 +1,7 @@
 package util;
 
 import PushNotificationUtil.MessageUtil;
+import dao.CircleDAO;
 import dao.CircleImp;
 import dao.NotificationDAO;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import pojo.*;
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,11 +25,12 @@ import pojo.*;
 public class NewEventUtil 
 {
     public Set<User> getUsersExistInCircle(int id)
-    {
-        Set<User> users = new HashSet(0);//cjeck it
-        Circle c=new Circle();
-            c.setId(id);
-        Circle circle = new CircleImp().retrieveCircleById(c);
+    {        Set<User> users = new HashSet(0);//cjeck it
+        
+        Circle circle = new CircleDAO().retrieveCircleById(id);
+        System.out.println(circle);
+        if(circle!=null)
+        {
         Set existIn =circle.getExistIns();
         for (Iterator it = existIn.iterator(); it.hasNext();)
         {
@@ -39,6 +42,9 @@ public class NewEventUtil
             }
         }
         return users;
+        }
+        return null;
+        
     }
     
     

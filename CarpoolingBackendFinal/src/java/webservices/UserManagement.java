@@ -338,6 +338,5 @@ public class UserManagement implements UserManagementInt{
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("you have json Exception ");
         }
-    }
-    
+    }    
 }
