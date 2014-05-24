@@ -18,5 +18,6 @@ public interface EventManagementInt {
     public String cancelEvent(String input);
     public String retrieveEvent(String input);
     public String retrieveAllUserEvents(String input);
+    public String wantToJoinUsers(String input);
     
 }

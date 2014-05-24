@@ -305,7 +305,7 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
         }
     }
     
-//    @Override
+    @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
