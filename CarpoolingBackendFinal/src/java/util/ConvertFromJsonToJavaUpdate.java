@@ -70,7 +70,8 @@ public class ConvertFromJsonToJavaUpdate {
                 boolean b = checkNumberOfSlots(slots,myEvent.getId());
                 if(b)
                     myEvent.setNoOfSlots(slots);
-                
+                else
+                    return null;
                 // handly el case de wasaly l l driver en el slots 2a2al mn l nas l 3mla join menf3sh
             }
             //Date
@@ -135,8 +136,7 @@ public class ConvertFromJsonToJavaUpdate {
             ex.printStackTrace();
             return null;
         }
-    }
-    
+    }  
     public Set<EventToLocation> convertEventToLocations(JSONArray eventToLocationsJson)
     {
         Set eventToLocations =  new HashSet(0);

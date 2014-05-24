@@ -294,10 +294,6 @@ public class UserManagement implements UserManagementInt{
             else
                 return new ApplicatipnUtil().jsonException("this user not join");
             
-            
-            
-            
-
         } catch (JSONException ex) {
             ex.printStackTrace();
                return new ApplicatipnUtil().jsonException("you have json Exception ");

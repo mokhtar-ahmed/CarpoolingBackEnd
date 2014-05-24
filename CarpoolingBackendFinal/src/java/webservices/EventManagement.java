@@ -103,35 +103,44 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
             JSONObject event = new JSONObject(input);
             
             Event myEvent = edao.retrieveEvent(event.getInt("idEvent"));
-            System.out.println(myEvent.getUser().getName());
-            myEvent = new ConvertFromJsonToJavaUpdate().jsonToJava(event,myEvent);
-            
-            boolean b =edao.updateEvent(myEvent);
-            System.out.println(b);
-            if(b)
+            if(myEvent!=null)
             {
-                Set joinEvents =myEvent.getJoinEvents();
-                String message = ""+myEvent.getEventName()+" "+Messages.UPDATE_EVENT;
-                String statue ="update";
-                for (Iterator it = joinEvents.iterator(); it.hasNext();) 
-               {
-                   JoinEvent joinEvent = (JoinEvent)it.next();
-                   if(joinEvent.getUserStatue().getId()!=6)
-                       new NewEventUtil().sendNotificationToUser(joinEvent,message,statue);
-               }
-                JSONObject updated = new JSONObject();
-                JSONObject jsonOutput = new JSONObject();
+                System.out.println(myEvent.getUser().getName());
+                myEvent = new ConvertFromJsonToJavaUpdate().jsonToJava(event,myEvent);
+                if(myEvent!=null)
+                {
+                    boolean b =edao.updateEvent(myEvent);
+                    System.out.println(b);
+                    if(b)
+                    {
+                        Set joinEvents =myEvent.getJoinEvents();
+                        String message = ""+myEvent.getEventName()+" "+Messages.UPDATE_EVENT;
+                        String statue ="update";
+                        for (Iterator it = joinEvents.iterator(); it.hasNext();) 
+                        {
+                            JoinEvent joinEvent = (JoinEvent)it.next();
+                            if(joinEvent.getUserStatue().getId()!=6)
+                                new NewEventUtil().sendNotificationToUser(joinEvent,message,statue);
+                        }
+                        JSONObject updated = new JSONObject();
+                        JSONObject jsonOutput = new JSONObject();
             
-                updated.put("updated", "true");
-                jsonOutput.put("HasError", false);
-                jsonOutput.put("HasWarning", false);
-                jsonOutput.put("FaultsMsg", "");
-                jsonOutput.put("ResponseValue",updated);
+                        updated.put("updated", "true");
+                        jsonOutput.put("HasError", false);
+                        jsonOutput.put("HasWarning", false);
+                        jsonOutput.put("FaultsMsg", "");
+                        jsonOutput.put("ResponseValue",updated);
                 
-                return jsonOutput.toString();
+                        return jsonOutput.toString();
+                    }
+                    else
+                        return new ApplicatipnUtil().jsonException("you event has not updated ");
+                }
+                else
+                    return new ApplicatipnUtil().jsonException("Sorry,number of slots is less than accepted users");
             }
             else
-                return new ApplicatipnUtil().jsonException("you event has not updated ");
+                return new ApplicatipnUtil().jsonException("this event not found ");
         } catch (JSONException ex) {
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("you have json Exception ");
@@ -256,6 +265,10 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
             JSONObject myUser = new JSONObject(input);
             
             int userId= myUser.getInt("userId");
+            User user = new UserDAO().retrieveUserById(userId);
+            
+            if(user!=null)
+            {
             List events=eventDAO.retrieveUserEvents(userId);
             
             JSONArray eventJson = new JSONArray();
@@ -279,7 +292,7 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
             //Attend
             List<JoinEvent> l =joinEventDAO.retrieveAttendedEvent(userId);
             JSONObject evenJsonO = new JSONObject();
-            for (Iterator it = l.iterator(); it.hasNext();)
+            for(Iterator it = l.iterator(); it.hasNext();)
             {
                 JoinEvent joinEvent =(JoinEvent)it.next();
                 Event event = eventDAO.retrieveEvent(joinEvent.getId().getEventId());
@@ -297,72 +310,64 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
                 jsonOutput.put("HasWarning", false);
                 jsonOutput.put("FaultsMsg", "");
                 jsonOutput.put("ResponseValue",eventJson);
-            return jsonOutput.toString();
+                return jsonOutput.toString();
+        }
+            else
+                return new ApplicatipnUtil().jsonException("Sorry this user not found");
             
         } catch (JSONException ex) {
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("Json exception");
         }
     }
-    
     @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/wantToJoinUsers")
-    public String wantToJoinUsers(String input)
-    {
+    public String wantToJoinUsers(String input){
         try {
             JSONObject myUser = new JSONObject(input);
             int eventId= myUser.getInt("eventId");
             
             EventDAO edao = new EventDAO();
             Event event = edao.retrieveEvent(eventId);
+            if(event!=null)
+            {
             JoinEventDAO jedao = new JoinEventDAO();
             
             List<JoinEvent> joinEvents =jedao.retrieveWantToJoinUsers(eventId);
             JSONObject jsonOutput = new JSONObject();
             JSONArray joinEventJson = new JSONArray();
             
-            if(joinEvents.size()>0)
+            int userId;
+            String userUsername;
+            JSONObject joinJsonObj = new JSONObject();
+            for (Iterator it = joinEvents.iterator(); it.hasNext();)
             {
-                int userId;
-                String userUsername;
-                JSONObject joinJsonObj = new JSONObject();
-                for (Iterator it = joinEvents.iterator(); it.hasNext();)
-                {
-                    JoinEvent joinEvent=(JoinEvent)it.next();
-                    userId=joinEvent.getUser().getId();
-                    userUsername=joinEvent.getUser().getUsername();
-                    
-                    joinJsonObj.put("userId",userId);
-                    joinJsonObj.put("username",userUsername);
-                    
-                    joinEventJson.put(joinJsonObj);
-                    
-                }
-                jsonOutput.put("HasError", false);
-                jsonOutput.put("HasWarning", false);
-                jsonOutput.put("FaultsMsg", "");
-                jsonOutput.put("ResponseValue",joinEventJson);
-                
-                return jsonOutput.toString();
-            }
-            else
-            {
-                
-                jsonOutput.put("HasError", false);
-                jsonOutput.put("HasWarning", false);
-                jsonOutput.put("FaultsMsg", "");
-                jsonOutput.put("ResponseValue",joinEventJson);
-                
-                return jsonOutput.toString();
+                JoinEvent joinEvent=(JoinEvent)it.next();
+                userId=joinEvent.getUser().getId();
+                userUsername=joinEvent.getUser().getUsername();
+                   
+                joinJsonObj.put("userId",userId);
+                joinJsonObj.put("username",userUsername);
+                   
+                joinEventJson.put(joinJsonObj);
             }
             
+            jsonOutput.put("HasError", false);
+            jsonOutput.put("HasWarning", false);
+            jsonOutput.put("FaultsMsg", "");
+            jsonOutput.put("ResponseValue",joinEventJson);
+                
+            return jsonOutput.toString();
+            }
+            else
+                return new ApplicatipnUtil().jsonException("tihs event not found");
+        
         } catch (JSONException ex) {
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("Json exception");
         }
-        
     }
 }
