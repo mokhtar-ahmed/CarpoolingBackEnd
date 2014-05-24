@@ -129,7 +129,7 @@ public class CommentManagement implements CommentManagementInt{
                 }
             }
             else
-                return new ApplicatipnUtil().jsonException("problem with json you send");
+                return new ApplicatipnUtil().jsonException("user or event not found");
             
         } catch (JSONException ex) {
             ex.printStackTrace();
