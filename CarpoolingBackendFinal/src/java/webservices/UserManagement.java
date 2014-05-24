@@ -32,6 +32,7 @@ import webservicesInterfaces.UserManagementInt;
  *
  * @author Nourhan
  */
+@Path("/user")
 public class UserManagement implements UserManagementInt{
 
     @Override
@@ -45,15 +46,19 @@ public class UserManagement implements UserManagementInt{
             JSONObject myInput = new JSONObject(input);
             
             int circleId =myInput.getInt("circleId");
+            
             int userId  =myInput.getInt("userId");
-            Circle circle = new CircleDAO().retrieveCircleById(userId);
+            Circle circle = new CircleDAO().retrieveCircleById(circleId);
+            System.out.println(circle);
             User user = new UserDAO().retrieveUserById(userId);
+            System.out.println(user);
             if(circle!=null && user!=null)
             {
+                System.out.println("1");
             ExistInId existInId = new ExistInId(userId, circleId);
             ExistIn existIn = cdao.retrieveExistIn(existInId);
             if(existIn!=null)
-            {
+            {System.out.println("2");
                 existIn.setBolckStatue("true");
                 cdao.updateExistIn(existIn);
                 
@@ -90,7 +95,7 @@ public class UserManagement implements UserManagementInt{
             
             int circleId =myInput.getInt("circleId");
             int userId  =myInput.getInt("userId");
-            Circle circle = new CircleDAO().retrieveCircleById(userId);
+            Circle circle = new CircleDAO().retrieveCircleById(circleId);
             User user = new UserDAO().retrieveUserById(userId);
             if(circle!=null && user!=null)
             {

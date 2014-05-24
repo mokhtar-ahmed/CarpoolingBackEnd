@@ -48,6 +48,9 @@ public class LocationManagement implements LocationManagementInt{
                 String address=myLocation.getAddress();
                 JSONObject locatoinJson= new JSONObject();
                 locatoinJson.put("id", id);
+                locatoinJson.put("longitude", myLocation.getLongitude());   
+                locatoinJson.put("lattitude", myLocation.getLattitude());   
+                locatoinJson.put("altitude", myLocation.getAltitude());   
                 locatoinJson.put("address", address);
                 allAdresses.put(i, locatoinJson);
                 i++;

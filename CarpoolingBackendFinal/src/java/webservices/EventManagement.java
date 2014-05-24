@@ -109,17 +109,21 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
             JSONObject event = new JSONObject(input);
             
             Event myEvent = edao.retrieveEvent(event.getInt("idEvent"));
+            System.out.println(myEvent+"***1");
             if(myEvent!=null)
             {
                 System.out.println(myEvent.getUser().getName());
                 myEvent = new ConvertFromJsonToJavaUpdate().jsonToJava(event,myEvent);
+                
+                
                 if(myEvent!=null)
-                {
+                {    
                     boolean b =edao.updateEvent(myEvent);
                     System.out.println(b);
                     if(b)
                     {
                         Set joinEvents =myEvent.getJoinEvents();
+                        System.out.println(joinEvents.size());
                         String message = ""+myEvent.getEventName()+" "+Messages.UPDATE_EVENT;
                         String statue ="update";
                         for (Iterator it = joinEvents.iterator(); it.hasNext();) 
@@ -347,13 +351,15 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
             JSONArray joinEventJson = new JSONArray();
             
             int userId;
-            String userUsername;
-            JSONObject joinJsonObj = new JSONObject();
+            
+            JSONObject joinJsonObj;
             for (Iterator it = joinEvents.iterator(); it.hasNext();)
             {
+                joinJsonObj = new JSONObject();
+                
                 JoinEvent joinEvent=(JoinEvent)it.next();
                 userId=joinEvent.getUser().getId();
-                userUsername=joinEvent.getUser().getUsername();
+                String userUsername=joinEvent.getUser().getUsername();
                    
                 joinJsonObj.put("userId",userId);
                 joinJsonObj.put("username",userUsername);
