@@ -7,6 +7,7 @@
 package mytest;
 
 
+import dao.EventDAO;
 import dao.LocationDAO;
 import dao.UserDAO;
 import java.text.DateFormat;
@@ -223,46 +224,45 @@ public class TestServices {
 //    }
    
     //test add comment
-//       public static void main(String args[])
-//       {
-//           try {
-//               JSONObject comment = new JSONObject();
-//               JSONObject event = new JSONObject();
-//               JSONObject user = new JSONObject();
-//               
-//               event.put("id", 1);
-//               user.put("id", 7);
-//               
-//               comment.put("owner", user);
-//               comment.put("event", event);
-//               comment.put("text", "Hello");
-//               comment.put("date", "2015-01-27 00:02:00.0");
-//               
-//               CommentManagement cm = new CommentManagement();
-//               String out= cm.addComment(comment.toString());
-//               System.out.println(comment.toString());
-//               System.out.println(out);
-//               
-//           } catch (JSONException ex) {
-//               ex.printStackTrace();
-//           }
-//           
-//       }
+       public static void main(String args[])
+       {
+           try {
+               JSONObject comment = new JSONObject();
+               JSONObject event = new JSONObject();
+               JSONObject user = new JSONObject();
+               
+               event.put("id", 1);
+               user.put("id", 8);
+               comment.put("owner", user);
+               comment.put("event", event);
+               comment.put("text", "Hello");
+               comment.put("date", "2015-01-27 00:02:00.0");
+               
+               CommentManagement cm = new CommentManagement();
+               String out= cm.addComment(comment.toString());
+               
+               System.out.println(out);
+               
+           } catch (JSONException ex) {
+               ex.printStackTrace();
+           }
+           
+       }
     
     //deleteComment
-    public static void main(String args[])
-    {
-        try {
-            JSONObject comment = new JSONObject();
-            comment.put("id", 5);
-            
-            CommentManagement cm= new CommentManagement();
-            String j=cm.deleteComment(comment.toString());
-            System.out.println(j);
-        } catch (JSONException ex) {
-            Logger.getLogger(TestServices.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }    
+//    public static void main(String args[])
+//    {
+//        try {
+//            JSONObject comment = new JSONObject();
+//            comment.put("id", 5);
+//            
+//            CommentManagement cm= new CommentManagement();
+//            String j=cm.deleteComment(comment.toString());
+//            System.out.println(j);
+//        } catch (JSONException ex) {
+//            Logger.getLogger(TestServices.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }    
     
     //    public static void main(String args[])
 //    {
