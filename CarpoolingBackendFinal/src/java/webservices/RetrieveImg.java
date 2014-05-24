@@ -7,6 +7,7 @@
 package webservices;
 
 
+import dao.UserImp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import pojo.User;
 
 /**
  *
@@ -35,6 +37,17 @@ public class RetrieveImg {
             byte[] imageBytes = null;
             try {
                 o = new JSONObject(user);
+                //=======check 
+                UserImp q=new UserImp();
+                User u11=new User();
+                u11.setId(o.getInt("userId"));
+                if(q.retrieveUserById(u11)==null)
+                {
+                    JSONObject a=new JSONObject();
+                    a.put("response","id deosn't exist in db");
+                    return a.toString();
+                }
+                //========
              path = "F://" + o.getInt("userId") + ".png";
                 System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%"+ path);
             URL url = new File(path).toURI().toURL();

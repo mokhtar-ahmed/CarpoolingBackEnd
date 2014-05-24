@@ -66,6 +66,14 @@ public class SaveImg {
         u.setUsername(o.getString("username"));
         UserImp userImp=new UserImp();
         u=userImp.retrieveUserByUserName(u);
+        //=======check 
+        if(u==null)
+        {
+            JSONObject a=new JSONObject();
+            a.put("response","user deosn't exist in db");
+            return a.toString();
+        }
+        //========
         String s = saveImgg(img, u);
         return s;
         } catch (JSONException ex) {
