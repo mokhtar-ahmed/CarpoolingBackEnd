@@ -28,13 +28,17 @@ public class CommentUtil {
         Comment comm = new Comment();
         EventDAO edao = new EventDAO();
         UserDAO udao = new UserDAO();
+        
         try {
             if(!comment.isNull("event"))
             {
                 JSONObject event=comment.getJSONObject("event");
                 int eventId=event.getInt("id");
                 Event myEvent=edao.retrieveEvent(eventId);
-                comm.setEvent(myEvent);
+                if(myEvent!=null)
+                    comm.setEvent(myEvent);
+                else
+                    return null;
             }
             
             if(!comment.isNull("owner"))
@@ -42,7 +46,10 @@ public class CommentUtil {
                 JSONObject user=comment.getJSONObject("owner");
                     int userId=user.getInt("id");
                     User myUser=udao.retrieveUserById(userId);
-                    comm.setUser(myUser);
+                    if(myUser!=null)
+                        comm.setUser(myUser);
+                    else
+                        return null;
             }
             if(!comment.isNull("text"))
             {
@@ -65,6 +72,7 @@ public class CommentUtil {
             ex.printStackTrace();
             return null;
         }
+    
         }
         
     
