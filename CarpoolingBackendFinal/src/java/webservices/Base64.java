@@ -1,4 +1,4 @@
-package services;
+package webservices;
 
 /**
  * <p>Encodes and odes to and from Base64 notation.</p>

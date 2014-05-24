@@ -41,7 +41,7 @@ public class RetrieveImg {
             } catch (JSONException ex) {
                 Logger.getLogger(RetrieveImg.class.getName()).log(Level.SEVERE, null, ex);
             }
-            String s = services.Base64.encodeFromFile(path);
+            String s = webservices.Base64.encodeFromFile(path);
             return s;
         } catch (IOException ex) {
             Logger.getLogger(SaveImg.class.getName()).log(Level.SEVERE, null, ex);
