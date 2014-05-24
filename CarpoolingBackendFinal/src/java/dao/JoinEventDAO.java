@@ -121,5 +121,11 @@ public class JoinEventDAO {
         }
     }
     
-    
+    public List<JoinEvent> retrieveWantToJoinUsers(int eventId)
+    {
+        Criteria criteria = session.createCriteria(JoinEvent.class)
+                .add(Restrictions.eq("event.id", eventId));
+        List<JoinEvent> l = criteria.list();
+        return l;
+    }
 }

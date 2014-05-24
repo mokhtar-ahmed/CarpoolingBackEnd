@@ -13,6 +13,8 @@ import util.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -301,5 +303,66 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("Json exception");
         }
+    }
+    
+//    @Override
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/wantToJoinUsers")
+    public String wantToJoinUsers(String input)
+    {
+        try {
+            JSONObject myUser = new JSONObject(input);
+            int eventId= myUser.getInt("eventId");
+            
+            EventDAO edao = new EventDAO();
+            Event event = edao.retrieveEvent(eventId);
+            JoinEventDAO jedao = new JoinEventDAO();
+            
+            List<JoinEvent> joinEvents =jedao.retrieveWantToJoinUsers(eventId);
+            JSONObject jsonOutput = new JSONObject();
+            JSONArray joinEventJson = new JSONArray();
+            
+            if(joinEvents.size()>0)
+            {
+                int userId;
+                String userUsername;
+                JSONObject joinJsonObj = new JSONObject();
+                for (Iterator it = joinEvents.iterator(); it.hasNext();)
+                {
+                    JoinEvent joinEvent=(JoinEvent)it.next();
+                    userId=joinEvent.getUser().getId();
+                    userUsername=joinEvent.getUser().getUsername();
+                    
+                    joinJsonObj.put("userId",userId);
+                    joinJsonObj.put("username",userUsername);
+                    
+                    joinEventJson.put(joinJsonObj);
+                    
+                }
+                jsonOutput.put("HasError", false);
+                jsonOutput.put("HasWarning", false);
+                jsonOutput.put("FaultsMsg", "");
+                jsonOutput.put("ResponseValue",joinEventJson);
+                
+                return jsonOutput.toString();
+            }
+            else
+            {
+                
+                jsonOutput.put("HasError", false);
+                jsonOutput.put("HasWarning", false);
+                jsonOutput.put("FaultsMsg", "");
+                jsonOutput.put("ResponseValue",joinEventJson);
+                
+                return jsonOutput.toString();
+            }
+            
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+            return new ApplicatipnUtil().jsonException("Json exception");
+        }
+        
     }
 }
