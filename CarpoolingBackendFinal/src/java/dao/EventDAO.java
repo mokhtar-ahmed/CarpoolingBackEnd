@@ -34,7 +34,6 @@ public class EventDAO {
             return null;
         }
     }
-
     public Event retrieveEvent(int eventId) {
         Criteria criteria = session.createCriteria(Event.class)
                 .add(Restrictions.eq("id", eventId));
@@ -47,19 +46,14 @@ public class EventDAO {
             return null;
         }
     }
-    
-    public List<Event> retrieveUserEvents(int id)
-    {
+    public List<Event> retrieveUserEvents(int id){
         Criteria criteria = session.createCriteria(Event.class)
                 .add(Restrictions.eq("user.id" ,id));
         List<Event> l = criteria.list();
         return l;
     }
-
     public List<Event> retrieveAllEvents(Event event) {
-//        Example eventExample = Example.create(event);
-//        List<Event> l= session.createCriteria(Event.class)
-//                .add(eventExample).list();
+
         Criteria criteria = session.createCriteria(Event.class)
                 .add(Restrictions.eq("eventName", event.getEventName()));
         List<Event> l = criteria.list();
@@ -71,7 +65,6 @@ public class EventDAO {
         }
 
     }
-
     public boolean updateEvent(Event event) {
         try {
             session.beginTransaction();
@@ -85,7 +78,6 @@ public class EventDAO {
         }
 
     }
-
     public boolean addEvent(Event event) {
         try {
             session.beginTransaction();

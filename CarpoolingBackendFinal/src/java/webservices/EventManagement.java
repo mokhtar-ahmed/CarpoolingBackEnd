@@ -30,7 +30,6 @@ import org.codehaus.jettison.json.JSONObject;
  */
 @Path("/event")
 public class EventManagement implements webservicesInterfaces.EventManagementInt{
-
     @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -41,52 +40,59 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
         EventDAO eventDAO = new EventDAO();
         ConvertFromJsonToJava convertFromJsonToJava = new ConvertFromJsonToJava();
         JoinEventDAO joinEventDAO= new JoinEventDAO();
-        
         try {
             JSONObject event = new JSONObject(input);
             myEvent = convertFromJsonToJava.jsonToJavaAdd(event);
-            
-            if(eventDAO.retrieveEvent2(myEvent)==null)
-            {
-                boolean b =eventDAO.addEvent(myEvent);
-                if(b)
-                {
-                    // add creator in joinEvent table    
-                    UserStatue userStatue = new UserStatueDAO().retrieveUserStatueById(6);
-                    JoinEvent jee = new JoinEvent(new JoinEventId(myEvent.getId(), myEvent.getUser().getId()),
-                            myEvent.getUser(),myEvent,userStatue);
-                    joinEventDAO.addJoinEvent(jee);
-                
-                    JSONObject add = new JSONObject();
-                    JSONObject jsonOutput = new JSONObject();
+             if(myEvent!=null)
+             {
+                 if(eventDAO.retrieveEvent2(myEvent)==null)
+                 {
+                     boolean b =eventDAO.addEvent(myEvent);
+                        if(b)
+                        {
+                            // add creator in joinEvent table    
+                            UserStatue userStatue = new UserStatueDAO().retrieveUserStatueById(6);
+                            JoinEvent jee = new JoinEvent(new JoinEventId(myEvent.getId(), myEvent.getUser().getId()),
+                                    myEvent.getUser(),myEvent,userStatue);
+                            joinEventDAO.addJoinEvent(jee);
+                            
+                            JSONObject add = new JSONObject();
+                            JSONObject jsonOutput = new JSONObject();
                     
-                    add.put("id", myEvent.getId());
-                    jsonOutput.put("HasError", false);
-                    jsonOutput.put("HasWarning", false);
-                    jsonOutput.put("FaultsMsg", "");
-                    jsonOutput.put("ResponseValue",add);
+                            add.put("id", myEvent.getId());
+                            jsonOutput.put("HasError", false);
+                            jsonOutput.put("HasWarning", false);
+                            jsonOutput.put("FaultsMsg", "");
+                            jsonOutput.put("ResponseValue",add);
                
-                    myEvent=eventDAO.retrieveEvent2(myEvent);
-                    event.put("idEvent", myEvent.getId());
-                    myEvent = convertFromJsonToJava.jsonToJavaAdd(event);
-                    eventDAO.updateEvent(myEvent);
+                            myEvent=eventDAO.retrieveEvent2(myEvent);
+                            event.put("idEvent", myEvent.getId());
+                            myEvent = convertFromJsonToJava.jsonToJavaAdd(event);
+                            if(myEvent!=null){
+                                System.out.println("nourhan  "+myEvent);
+                            //eventDAO.updateEvent(myEvent);
                     
-                    Set joinEvents =myEvent.getJoinEvents();
-                    String message =myEvent.getUser().getName()+" "+Messages.CREATE_EVENT+" "+myEvent.getEventName();
-                    String statue ="new";
-                    for (Iterator it = joinEvents.iterator(); it.hasNext();) 
-                    {
-                        JoinEvent joinEvent = (JoinEvent)it.next();
-                        new NewEventUtil().sendNotificationToUser(joinEvent, message, statue);
-                    }
-                    return  jsonOutput.toString();
-                }
-                else
-                    return new ApplicatipnUtil().jsonException("you have a problim your event does not add");
-            }
-            else
-                return new ApplicatipnUtil().jsonException("your event is already exsist");
-            
+                            Set joinEvents =myEvent.getJoinEvents();
+                            String message =myEvent.getUser().getName()+" "+Messages.CREATE_EVENT+" "+myEvent.getEventName();
+                            String statue ="new";
+                            for (Iterator it = joinEvents.iterator(); it.hasNext();) 
+                            {
+                                JoinEvent joinEvent = (JoinEvent)it.next();
+                                new NewEventUtil().sendNotificationToUser(joinEvent, message, statue);
+                            }
+                            return  jsonOutput.toString();
+                            }
+                            else
+                                return new ApplicatipnUtil().jsonException("Sorry, You have another event in that time");
+                        }
+                        else
+                            return new ApplicatipnUtil().jsonException("you have a problim your event does not add");
+                 }
+                 else
+                     return new ApplicatipnUtil().jsonException("your event is already exsist");
+             }
+             else
+                 return new ApplicatipnUtil().jsonException("Sorry, You have another event in that time");
         } catch (JSONException ex) {
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("you have json Exception ");
@@ -137,7 +143,7 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
                         return new ApplicatipnUtil().jsonException("you event has not updated ");
                 }
                 else
-                    return new ApplicatipnUtil().jsonException("Sorry,number of slots is less than accepted users");
+                    return new ApplicatipnUtil().jsonException("Sorry,number of slots is less than accepted users or EventDate is wrong");
             }
             else
                 return new ApplicatipnUtil().jsonException("this event not found ");

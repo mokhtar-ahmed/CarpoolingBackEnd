@@ -34,7 +34,7 @@ import pojo.User;
  * @author Nourhan
  */
 public class ConvertFromJsonToJavaUpdate {
-    Event myEvent = new Event();
+    Event myEvent;
     public Event jsonToJava(JSONObject eventJson,Event myEvent)
     {
         this.myEvent=myEvent;
@@ -94,6 +94,10 @@ public class ConvertFromJsonToJavaUpdate {
                 JSONArray eventToLocationsJson =eventJson.getJSONArray("eventToLocations");
                 myEvent.setEventToLocations(convertEventToLocations(eventToLocationsJson));
             }
+            //////////////////// el goz2 bta3 nafs el time menf3sh e add event f nafs el wa2t
+            if(new ApplicatipnUtil().checkIfDateExsit(myEvent.getEventDate(), myEvent.getUser().getId()))
+                return null;
+            //////////////////////
             
           return myEvent;
           

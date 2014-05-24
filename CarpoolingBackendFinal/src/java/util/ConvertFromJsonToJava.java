@@ -82,16 +82,20 @@ public class ConvertFromJsonToJava {
                 myEvent.setEventToLocations(convertEventToLocations(eventToLocationsJson));
             }
             //circles
-            if(!eventJson.isNull("cirlclesId") && id!=0 &&!eventJson.isNull("blockUsers"))
-            {
-                
+            if(!eventJson.isNull("cirlclesId") && id!=0 )
+            {            
                 //myEvent=deleteOldJoinEvent(myEvent);
                 JSONArray circlesId = eventJson.getJSONArray("cirlclesId");
-                JSONArray blockUsers = eventJson.getJSONArray("blockUsers");
+                JSONArray blockUsers = new JSONArray();
+                if(!eventJson.isNull("blockUsers"))
+                    blockUsers = eventJson.getJSONArray("blockUsers");
 
                 myEvent.setJoinEvents(convertJoinEvents(circlesId ,blockUsers));   
             }
-    
+            //////////////////// el goz2 bta3 nafs el time menf3sh e add event f nafs el wa2t
+            if(new ApplicatipnUtil().checkIfDateExsit(myEvent.getEventDate(), myEvent.getUser().getId()) && id==0)
+                return null;
+            //////////////////////
           return myEvent;
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -100,7 +104,7 @@ public class ConvertFromJsonToJava {
             ex.printStackTrace();
             return null;
         }
-}
+    }
     
     private User convertUser(JSONObject userjson) 
     {
@@ -176,45 +180,48 @@ public class ConvertFromJsonToJava {
             for(int i=0;i<circlesID.length();i++)
             {
                 circleID =circlesID.getInt(i);
-                Set<User> users = new NewEventUtil().getUsersExistInCircle(circleID);
-                
-                for (Iterator it = users.iterator(); it.hasNext();)
+                Circle c = new CircleDAO().retrieveCircleById(circleID);
+                if(c!=null)
                 {
-                    User user =(User)it.next();
-                    int blockUserID;
-                    boolean blocked=false;
-                    for(int j=0;j<blockUsers.length();j++)
+                    Set<User> users = new NewEventUtil().getUsersExistInCircle(circleID);
+                    if(users!=null)
                     {
-                        blocked =false;
-                        blockUserID=blockUsers.getInt(j);
-                        if(user.getId()==blockUserID)
+                        for (Iterator it = users.iterator(); it.hasNext();)
                         {
-                            blocked=true;
-                            break;
+                            User user =(User)it.next();
+                            int blockUserID;
+                            boolean blocked=false;
+                            for(int j=0;j<blockUsers.length();j++)
+                            {
+                                blocked =false;
+                                blockUserID=blockUsers.getInt(j);
+                                if(user.getId()==blockUserID)
+                                {
+                                    blocked=true;
+                                    break;
+                                }
+                            }
+                            if(!blocked)
+                            {
+                                JoinEvent joinEvent = new JoinEvent();  
+                                UserStatue userStatue=usdao.retrieveUserStatueById(1);
+                                JoinEventId joinEventId = new JoinEventId(id, user.getId());  
+                    
+                                joinEvent.setId(joinEventId);
+                                joinEvent.setEvent(myEvent);
+                                joinEvent.setUser(user);
+                                joinEvent.setUserStatue(userStatue);   
+                    
+                                jedao.addJoinEvent(joinEvent);// add in database
+                                joinEventsSet.add(joinEvent); //add in set
+                            }
                         }
                     }
-                    if(blocked)
-                        {
-                            JoinEvent joinEvent = new JoinEvent();  
-                            UserStatue userStatue=usdao.retrieveUserStatueById(1);
-                            JoinEventId joinEventId = new JoinEventId(id, user.getId());  
-                    
-                            joinEvent.setId(joinEventId);
-                            joinEvent.setEvent(myEvent);
-                            joinEvent.setUser(user);
-                            joinEvent.setUserStatue(userStatue);   
-                    
-                            jedao.addJoinEvent(joinEvent);// add in database
-                            joinEventsSet.add(joinEvent); //add in set
-                        }
-                    
                 }
             }
-            
-            
         } catch (JSONException ex) {
-                ex.printStackTrace();
-            }
+            ex.printStackTrace();
+        }
         return joinEventsSet;
     }
 }

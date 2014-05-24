@@ -25,10 +25,11 @@ import pojo.*;
 public class NewEventUtil 
 {
     public Set<User> getUsersExistInCircle(int id)
-    {        Set<User> users = new HashSet(0);//cjeck it
+    {        
+        Set<User> users = new HashSet(0);//cjeck it
         
         Circle circle = new CircleDAO().retrieveCircleById(id);
-        System.out.println(circle);
+        System.out.println(circle +"xyz");
         if(circle!=null)
         {
         Set existIn =circle.getExistIns();
@@ -43,8 +44,8 @@ public class NewEventUtil
         }
         return users;
         }
-        return null;
-        
+        else
+            return null;
     }
     
     
