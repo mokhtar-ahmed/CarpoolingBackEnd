@@ -109,55 +109,55 @@ public class TestServices {
     }*/
     
     //update Event Test
-    public static void main(String args[])
-    {
-        JSONObject j = new JSONObject();
-        try {    
-            j.put("idEvent",1);
-            
-            j.put("eventName", "Arab Mall");
-            
-            j.put("noOfSlots", 4);
-            
-            j.put("eventStatue", "updated");
-            
-            String d ="25/01/2015 00:02:00.0";
-            j.put("eventDate", d);
-            
-            LocationDAO ldao = new LocationDAO();
-            Location l = ldao.retrieveLocationById(1);
-            int locationId=l.getId();
-            String address = l.getAddress();
-            JSONObject loc = new JSONObject();
-            loc.put("idLocation", locationId);
-            loc.put("address", address);
-            j.put("location", loc);
-            
-            JSONObject user = new JSONObject();
-            user.put("id", 1);
-            j.put("user", user);
-            
-            JSONArray eventToLocation = new JSONArray();
-            for(int i=0; i<3;i++)
-            {
-                System.out.println(i);
-                JSONObject eventLocationJson = new JSONObject();
-                eventLocationJson.put("toOrder", i+1);
-                JSONObject locJson = new JSONObject();
-                locJson.put("id", i+1);
-                eventLocationJson.put("location", locJson);
-                eventToLocation.put(i, eventLocationJson);
-            }
-            j.put("eventToLocations", eventToLocation);
-            System.out.println(j.toString());
-            EventManagement eventManagement = new EventManagement();
-            String out =eventManagement.updateEvent(j.toString());
-            System.out.println(out);
-            
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        }
-    }
+//    public static void main(String args[])
+//    {
+//        JSONObject j = new JSONObject();
+//        try {    
+//            j.put("idEvent",1);
+//            
+//            j.put("eventName", "Arab Mall");
+//            
+//            j.put("noOfSlots", 4);
+//            
+//            j.put("eventStatue", "updated");
+//            
+//            String d ="25/01/2015 00:02:00.0";
+//            j.put("eventDate", d);
+//            
+//            LocationDAO ldao = new LocationDAO();
+//            Location l = ldao.retrieveLocationById(1);
+//            int locationId=l.getId();
+//            String address = l.getAddress();
+//            JSONObject loc = new JSONObject();
+//            loc.put("idLocation", locationId);
+//            loc.put("address", address);
+//            j.put("location", loc);
+//            
+//            JSONObject user = new JSONObject();
+//            user.put("id", 1);
+//            j.put("user", user);
+//            
+//            JSONArray eventToLocation = new JSONArray();
+//            for(int i=0; i<3;i++)
+//            {
+//                System.out.println(i);
+//                JSONObject eventLocationJson = new JSONObject();
+//                eventLocationJson.put("toOrder", i+1);
+//                JSONObject locJson = new JSONObject();
+//                locJson.put("id", i+1);
+//                eventLocationJson.put("location", locJson);
+//                eventToLocation.put(i, eventLocationJson);
+//            }
+//            j.put("eventToLocations", eventToLocation);
+//            System.out.println(j.toString());
+//            EventManagement eventManagement = new EventManagement();
+//            String out =eventManagement.updateEvent(j.toString());
+//            System.out.println(out);
+//            
+//        } catch (JSONException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
     
 
 //add event Test ***************************************************************************
@@ -352,20 +352,20 @@ public class TestServices {
 
     
     //joine event
-//    public static void main(String args[])
-//    {
-//        try {
-//            UserManagement u = new UserManagement();
-//            JSONObject j = new JSONObject();
-//            j.put("eventId",2 );
-//            j.put("userId", 1);
-//            
-//            String s =u.joinEvent(j.toString());
-//            System.out.println(s);
-//        } catch (JSONException ex) {
-//            ex.printStackTrace();
-//        }
-//    }
+    public static void main(String args[])
+    {
+        try {
+            UserManagement u = new UserManagement();
+            JSONObject j = new JSONObject();
+            j.put("eventId",5 );
+            j.put("userId", 4);
+            System.out.println(j);
+            String s =u.joinEvent(j.toString());
+            System.out.println(s);
+        } catch (JSONException ex){
+            ex.printStackTrace();
+        }
+    }
     
     
     

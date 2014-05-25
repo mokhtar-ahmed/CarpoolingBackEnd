@@ -141,6 +141,9 @@ public class UserManagement implements UserManagementInt{
             User user = new UserDAO().retrieveUserById(userId);
             if(event!=null && user!=null) 
             {
+                if(!new ApplicatipnUtil().checkIfDateExsit(event.getEventDate(), userId))
+
+                {
                 if(!user.equals(event.getUser()))
                 {
                     JoinEvent myJoinEvent=jedao.retrieveJoinEvent(userId, eventId);
@@ -193,6 +196,9 @@ public class UserManagement implements UserManagementInt{
                 }
                 else
                     return new ApplicatipnUtil().jsonException("this user is the owner of event");
+                }
+                else
+                    return new ApplicatipnUtil().jsonException("you may attend or have an other event in the same time");
             }
             else
                 return new ApplicatipnUtil().jsonException("user id or event id is not exsist");
