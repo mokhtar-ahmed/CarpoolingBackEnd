@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import pojo.Event;
+import pojo.JoinEvent;
 
 /**
  *
@@ -74,7 +75,8 @@ public class ApplicatipnUtil {
             }
             for(Iterator it = attend.iterator(); it.hasNext();)
             {
-                Event event = (Event) it.next();
+                JoinEvent joinEvent = (JoinEvent) it.next();
+                Event event = new EventDAO().retrieveEvent(joinEvent.getEvent().getId());
             
                 yearEvent =event.getEventDate().getYear();
                 monthEvent =event.getEventDate().getMonth();

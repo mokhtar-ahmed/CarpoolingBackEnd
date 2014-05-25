@@ -110,18 +110,20 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
             
             Event myEvent = edao.retrieveEvent(event.getInt("idEvent"));
             System.out.println(myEvent+"***1");
+  
             if(myEvent!=null)
             {
                 System.out.println(myEvent.getUser().getName());
                 myEvent = new ConvertFromJsonToJavaUpdate().jsonToJava(event,myEvent);
-                
-                
+                System.out.println(myEvent);
+//                
                 if(myEvent!=null)
                 {    
                     boolean b =edao.updateEvent(myEvent);
                     System.out.println(b);
                     if(b)
                     {
+                       // myEvent = edao.retrieveEvent(event.getInt("idEvent"));
                         Set joinEvents =myEvent.getJoinEvents();
                         System.out.println(joinEvents.size());
                         String message = ""+myEvent.getEventName()+" "+Messages.UPDATE_EVENT;
@@ -147,7 +149,7 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
                         return new ApplicatipnUtil().jsonException("you event has not updated ");
                 }
                 else
-                    return new ApplicatipnUtil().jsonException("Sorry,number of slots is less than accepted users or EventDate is wrong");
+                    return new ApplicatipnUtil().jsonException("Sorry,number of slots is less than accepted users");
             }
             else
                 return new ApplicatipnUtil().jsonException("this event not found ");
@@ -155,6 +157,7 @@ public class EventManagement implements webservicesInterfaces.EventManagementInt
             ex.printStackTrace();
             return new ApplicatipnUtil().jsonException("you have json Exception ");
         }
+        //return "";
     }
     @Override
     @POST

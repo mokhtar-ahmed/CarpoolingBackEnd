@@ -68,7 +68,7 @@ public class EventDAO {
     public boolean updateEvent(Event event) {
         try {
             session.beginTransaction();
-            session.saveOrUpdate(event);
+            session.merge(event);
             session.getTransaction().commit();
             return true;
         } catch (SecurityException ex) {

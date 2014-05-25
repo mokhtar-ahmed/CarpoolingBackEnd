@@ -95,8 +95,8 @@ public class ConvertFromJsonToJavaUpdate {
                 myEvent.setEventToLocations(convertEventToLocations(eventToLocationsJson));
             }
             //////////////////// el goz2 bta3 nafs el time menf3sh e add event f nafs el wa2t
-            if(new ApplicatipnUtil().checkIfDateExsit(myEvent.getEventDate(), myEvent.getUser().getId()))
-                return null;
+//            if(new ApplicatipnUtil().checkIfDateExsit(myEvent.getEventDate(), myEvent.getUser().getId()))
+//                return null;
             //////////////////////
             
           return myEvent;
