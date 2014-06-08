@@ -352,22 +352,20 @@ public class TestServices {
 
     
     //joine event
-    public static void main(String args[])
-    {
-        try {
-            UserManagement u = new UserManagement();
-            JSONObject j = new JSONObject();
-            j.put("eventId",5 );
-            j.put("userId", 4);
-            System.out.println(j);
-            String s =u.joinEvent(j.toString());
-            System.out.println(s);
-        } catch (JSONException ex){
-            ex.printStackTrace();
-        }
-    }
-    
-    
+//    public static void main(String args[])
+//    {
+//        try {
+//            UserManagement u = new UserManagement();
+//            JSONObject j = new JSONObject();
+//            j.put("eventId",5 );
+//            j.put("userId", 4);
+//            System.out.println(j);
+//            String s =u.joinEvent(j.toString());
+//            System.out.println(s);
+//        } catch (JSONException ex){
+//            ex.printStackTrace();
+//        }
+//    }
     
     
     //canceld Event Test
@@ -471,4 +469,33 @@ public class TestServices {
 //            ex.printStackTrace();
 //        }
 //    }
+
+ public static void main(String args[])
+    {
+        try {
+            JSONObject j = new JSONObject();
+            JSONObject eventJson = new JSONObject();
+            eventJson.put("id", 1);
+            j.put("event", eventJson);
+            
+            JSONObject ownerJson = new JSONObject();
+            ownerJson.put("id", 2);
+            j.put("owner", ownerJson);
+            
+            j.put("text", "my new comment est");
+            
+            j.put("date","2014-02-23 01:00:00");
+            
+            System.out.println("22222"+j.toString());
+            String s =new CommentManagement().addComment(j.toString());
+            System.out.println(s);
+            
+            
+        } catch (JSONException ex) {
+            Logger.getLogger(TestServices.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+       
+    }
+
 }

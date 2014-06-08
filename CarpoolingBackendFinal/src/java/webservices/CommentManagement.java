@@ -9,6 +9,7 @@ package webservices;
 import dao.*;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -21,6 +22,7 @@ import org.codehaus.jettison.json.JSONObject;
 import pojo.*;
 import util.ApplicatipnUtil;
 import util.CommentUtil;
+import util.NewEventUtil;
 import webservicesInterfaces.CommentManagementInt;
 
 /**
@@ -114,6 +116,24 @@ public class CommentManagement implements CommentManagementInt{
                 boolean b =cdao.addComment(comment);
                 if(b)
                 {
+                    
+/////////////////////////////////////////////////////////                    
+                    Event event =comment.getEvent();
+                    List<JoinEvent> joinEvents = new JoinEventDAO().retrieveJoinEventsRows(event.getId());
+                    String message ="new comment is added in"+event.getEventName();
+                    String statue ="add comment";
+                    if(joinEvents.size()>0)
+                    {
+                        for (Iterator it = joinEvents.iterator(); it.hasNext();) 
+                        {
+                            JoinEvent joinEvent = (JoinEvent)it.next();
+                            if(comment.getUser().getId()==joinEvent.getUser().getId() || joinEvent.getUserStatue().getId()!=2 );
+                            {
+                                new NewEventUtil().sendNotificationToUser(joinEvent,message,statue);
+                            }
+                        }
+                    }
+/////////////////////////////////                            
                     Comment output=cdao.retrieveCommentbyExample(comment);
                     commentId.put("commentID", output.getId());
                     jsonOutput.put("HasError", false);

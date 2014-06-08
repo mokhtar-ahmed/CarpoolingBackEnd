@@ -129,4 +129,16 @@ public class JoinEventDAO {
         List<JoinEvent> l = criteria.list();
         return l;
     }
+    
+    
+    
+    //add comment notification
+    public List<JoinEvent> retrieveJoinEventsRows(int eventId)
+    {
+        Criteria criteria = session.createCriteria(JoinEvent.class)
+                .add(Restrictions.eq("event.id",eventId));
+        
+        List<JoinEvent> l = criteria.list();
+        return l;
+    }
 }
